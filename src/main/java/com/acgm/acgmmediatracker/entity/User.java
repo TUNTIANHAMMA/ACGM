@@ -11,7 +11,6 @@ public class User {
   private long id;
   private String username;
   private String email;
-  private String emailNorm;
   private String preference;
   private String password;
   private String role;

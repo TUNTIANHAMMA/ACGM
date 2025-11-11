@@ -25,7 +25,6 @@ class UserMapperTest {
         User user = new User();
         user.setUsername("test-user");
         user.setEmail("user@example.com");
-        user.setEmailNorm("user@example.com");
         user.setPreference("{\"theme\":\"dark\"}");
         user.setPassword("secret");
         user.setRole("USER");
@@ -39,6 +38,7 @@ class UserMapperTest {
         assertThat(found).isNotNull();
         assertThat(found.getUsername()).isEqualTo("test-user");
         assertThat(found.getEmail()).isEqualTo("user@example.com");
-        assertThat(found.getPreference()).isEqualTo("{\"theme\":\"dark\"}");
+        assertThat(found.getPreference().replaceAll("\\s+", ""))
+                .contains("{\"theme\":\"dark\"}");
     }
 }

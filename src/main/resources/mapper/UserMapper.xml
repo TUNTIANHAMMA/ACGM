@@ -8,7 +8,6 @@
         <id property="id" column="id" />
         <result property="username" column="username" />
         <result property="email" column="email" />
-        <result property="emailNorm" column="email_norm" />
         <result property="preference" column="preference" />
         <result property="password" column="password" />
         <result property="role" column="role" />
@@ -20,7 +19,6 @@
         id,
         username,
         email,
-        email_norm,
         preference,
         password,
         role,
@@ -43,7 +41,7 @@
     <select id="selectByEmail" resultMap="UserResultMap">
         SELECT <include refid="User_Columns" />
         FROM users
-        WHERE email = #{email}
+        WHERE email_norm = LOWER(TRIM(#{email}))
     </select>
 
     <select id="selectAll" resultMap="UserResultMap">
