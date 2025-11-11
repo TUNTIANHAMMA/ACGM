@@ -1,6 +1,6 @@
 # ACGM Media Tracker New
 
-> This document updates the original "ACGM Media Tracker" specification to reflect the **current Spring Boot + MyBatis implementation** (截至 2024-XX-XX)。
+> This document updates the original "ACGM Media Tracker" specification to reflect the **current Spring Boot + MyBatis implementation** (截至 2025-11-11)。
 > 所有差异均基于代码仓库 `/src/main` 与数据库脚本 `acgm_my_sql_schema_query_templates_my_sql_8_x.sql` 的真实状态。
 
 ## 1. 文档说明 (Document Notes)
@@ -13,16 +13,16 @@
 
 | 模块 / Feature | 原始要求 | 当前实现 | 备注 / 代码路径 |
 | --- | --- | --- | --- |
-| 数据模型 & DAO | MySQL 8.x + MyBatis，覆盖用户、媒体、标签、收藏、评论、进度、API 缓存 | ✅ 已实现：实体、Mapper 与 XML、Service 层齐全；覆盖 `users`、`media_items`、`tags`、`media_tag_rel`(仅 SQL)、`favorites`、`reviews`、`media_api_info`、`progress_anime/game/music` | `src/main/Java/.../entity|mapper|service`，SQL 脚本位于 `src/main/resources` |
+| 数据模型 & DAO | MySQL 8.x + MyBatis，覆盖用户、媒体、标签、收藏、评论、进度、API 缓存 | ✅ 已实现：实体、Mapper 与 XML、Service 层齐全；覆盖 `users`、`media_items`、`tags`、`media_tag_rel`、`favorites`、`reviews`、`media_api_info`、`progress_anime/game/comic/music` | `src/main/Java/.../entity|mapper|service`，SQL 脚本位于 `src/main/resources` |
 | 业务服务层 | Service + Impl 负责 CRUD、幂等校验、异常抛出 | ✅ 已实现：九个 Service Impl，使用 `ResourceNotFoundException`、`ServiceBeanUtils` | `service/**/*.java`, `service/impl/**/*.java` |
 | 控制器 / REST API | 用户注册登录、媒体 CRUD、统计等 RESTful 接口 | ❌ 未实现：`controller/` 目录为空，无 `@RestController` | 需新增 Spring MVC 层 |
 | 认证与安全 | JWT / Session、偏好设置 | ⚠️ 基础设施已就绪：`users.preference` 字段、Spring Security 与 AuthService；尚未暴露注册/登录 API 或 JWT | 后续补充 Controller + Token 管理 |
 | Analytics / 统计 | 图表、完成率、趋势等 | ❌ 未实现：无统计 Service/Mapper，也无 SQL 视图消费 | 可基于 `media_items` 聚合实现 |
 | 外部 API 集成 | Bangumi / RAWG / Spotify、天气、推荐 | ⚠️ 部分准备：`media_api_info` 表和 Mapper 已有，但无集成逻辑或调度 | 需编写 Client + Service |
-| 标签多对多 | 记录标签与内容映射 | ⚠️ SQL 已建 `media_tag_rel`，但尚无 Java 实体、Mapper、Service | 需新增 `MediaTagRel` 相关代码 |
-| 进度 - 漫画 | 支持章节/卷管理 | ❌ 未实现：数据库无 `progress_comic`，代码亦无 | 需扩展 schema + Mapper |
+| 标签多对多 | 记录标签与内容映射 | ⚠️ `media_tag_rel` 的实体/Mapper/Service 已就绪；尚未在媒体 CRUD / DTO 中串联 | 下一步整合媒体创建/更新与标签同步 |
+| 进度 - 漫画 | 支持章节/卷管理 | ✅ `progress_comic` Schema + Mapper + Service + 触发器已实现 | `entity/ProgressComic`、`mapper/ProgressComicMapper` |
 | 存储过程 & Queries | 模板划分 queries.SQL | ✅ 最新拆分：`queries.sql` 保留模板示例，不影响核心开发 | 位于 `src/main/resources/queries.sql` |
-| 测试层 | 覆盖 Mapper/Service | 🟡 部分：仅有 `UserMapperTest` 学示例 | 应补充其余 Mapper/Service 测试 |
+| 测试层 | 覆盖 Mapper/Service | 🟡 Mapper 端通过 `MapperTestHelper` + 10 余个集成测试已覆盖；Service 层仍缺独立测试 | `src/test/java/com/acgm/.../mapper/*.java` |
 
 ## 3. 数据模型 (Data Model)
 
