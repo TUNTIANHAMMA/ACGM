@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.MediaTagRelationMapper">
+
+    <resultMap id="MediaTagRelationResultMap" type="com.acgm.acgmmediatracker.entity.MediaTagRelation">
+        <id property="mediaId" column="media_id" />
+        <id property="tagId" column="tag_id" />
+    </resultMap>
+
+    <sql id="MediaTagRelation_Columns">
+        media_id,
+        tag_id
+    </sql>
+
+    <select id="selectOne" resultMap="MediaTagRelationResultMap">
+        SELECT <include refid="MediaTagRelation_Columns" />
+        FROM media_tag_rel
+        WHERE media_id = #{mediaId}
+          AND tag_id = #{tagId}
+    </select>
+
+    <select id="selectByMediaId" resultMap="MediaTagRelationResultMap">
+        SELECT <include refid="MediaTagRelation_Columns" />
+        FROM media_tag_rel
+        WHERE media_id = #{mediaId}
+    </select>
+
+    <select id="selectByTagId" resultMap="MediaTagRelationResultMap">
+        SELECT <include refid="MediaTagRelation_Columns" />
+        FROM media_tag_rel
+        WHERE tag_id = #{tagId}
+    </select>
+
+    <insert id="insert" parameterType="com.acgm.acgmmediatracker.entity.MediaTagRelation">
+        INSERT INTO media_tag_rel (
+            media_id,
+            tag_id
+        ) VALUES (
+            #{mediaId},
+            #{tagId}
+        )
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM media_tag_rel
+        WHERE media_id = #{mediaId}
+          AND tag_id = #{tagId}
+    </delete>
+
+</mapper>

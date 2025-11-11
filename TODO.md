@@ -6,8 +6,8 @@
 
 ## P0 · 核心差异（必须优先解决）
 1. **标签多对多支撑 / Media-Tag Relation**
-   - SQL 中有 `media_tag_rel`，但 Java 实体/Mapper/Service 未实现。
-   - 需完善增删改查流程、在媒体 CRUD 中整合标签同步。
+   - ✅ 已完成基础层：`media_tag_rel` 的 Entity/Mapper/Service 建立，可单独管理关联数据。
+   - 下一步：与媒体 CRUD/DTO 集成，支持创建/更新时同步附带标签，并补测试。
 2. **漫画进度管理 / Progress (Comic)**
    - ✅ Schema（`progress_comic` + trigger）与 Entity/Mapper/Service 已落地，可等待后续 Controller/业务编排。
    - 下一步：在媒体 CRUD 中串联漫画进度创建/更新逻辑，并补测试。
