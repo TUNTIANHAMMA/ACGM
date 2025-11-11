@@ -7,11 +7,13 @@
     <resultMap id="MediaTagRelationResultMap" type="com.acgm.acgmmediatracker.entity.MediaTagRelation">
         <id property="mediaId" column="media_id" />
         <id property="tagId" column="tag_id" />
+        <result property="createTime" column="create_time" />
     </resultMap>
 
     <sql id="MediaTagRelation_Columns">
         media_id,
-        tag_id
+        tag_id,
+        create_time
     </sql>
 
     <select id="selectOne" resultMap="MediaTagRelationResultMap">

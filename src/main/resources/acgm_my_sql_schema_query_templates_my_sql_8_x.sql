@@ -84,6 +84,7 @@ CREATE TABLE tags (
 CREATE TABLE media_tag_rel (
   media_id BIGINT UNSIGNED NOT NULL,
   tag_id   BIGINT UNSIGNED NOT NULL,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (media_id, tag_id),
   KEY idx_tag_media (tag_id, media_id),
   CONSTRAINT fk_mtr_media FOREIGN KEY (media_id) REFERENCES media_items(id) ON DELETE CASCADE,

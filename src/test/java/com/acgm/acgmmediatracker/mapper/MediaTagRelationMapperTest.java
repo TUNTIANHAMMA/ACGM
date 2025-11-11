@@ -38,6 +38,7 @@ class MediaTagRelationMapperTest {
 
         MediaTagRelation fetched = relationMapper.selectOne(mediaItem.getId(), tag.getId());
         assertThat(fetched).isNotNull();
+        assertThat(fetched.getCreateTime()).isNotNull();
 
         List<MediaTagRelation> relations = relationMapper.selectByMediaId(mediaItem.getId());
         assertThat(relations)
