@@ -6,20 +6,20 @@
 
 ## P0 · 核心差异（必须优先解决）
 1. **标签多对多支撑 / Media-Tag Relation**
-   - ✅ 已完成基础层：`media_tag_rel` 的 Entity/Mapper/Service 建立，可单独管理关联数据。
-   - 下一步：与媒体 CRUD/DTO 集成，支持创建/更新时同步附带标签，并补测试。
+   - ✅ Entity/Mapper/XML/Service 以及 Mapper 级测试（含 create_time）已就绪。
+   - 下一步：在媒体 CRUD/DTO 中串联标签关系（批量插入、幂等删除），补 Service 层单测，并规划事务策略。
 2. **漫画进度管理 / Progress (Comic)**
    - ✅ Schema（`progress_comic` + trigger）与 Entity/Mapper/Service 已落地，可等待后续 Controller/业务编排。
    - 下一步：在媒体 CRUD 中串联漫画进度创建/更新逻辑，并补测试。
 3. **认证与账号体系 / Auth & Account**
-   - ✅ 已引入 Spring Security + PasswordEncoder，补齐 `users.preference` 字段、AuthService/DTO，可完成注册与基础登录校验。
-   - 下一步：对接 Controller（API 层）、引入真正的 JWT/Session 管理与偏好 CRUD/导出流程。
+    - ✅ Spring Security、PasswordEncoder、AuthService + DTO 已具备注册/登录核心逻辑。
+    - 下一步：实现 REST Controller、JWT/Session 管理、用户偏好 CRUD，以及集成测试（密码校验、重复账号校验）。
 4. **外部 API 集成骨架 / External API Integration**
-   - `media_api_info` 仅作为缓存表存在，无实际同步/client 调用。
-   - 定义抽象 client/service，至少完成一个 demo 集成（如 Bangumi）。
+   - `media_api_info` 表与 Mapper 可用，但无具体 Client 与同步 Service。
+   - 下一步：定义抽象 Client 接口，先挑选 Bangumi/RAWG 之一完成 demo，同步写缓存落库与失败重试策略。
 5. **REST 控制层 / REST Controllers**
-   - Controller 目录缺失，所有 CRUD/统计 API 未暴露。
-   - 需设计请求/响应 DTO、统一返回格式、全局异常处理。
+   - `controller/` 目录仍无实现，缺少任何 `@RestController`、请求 DTO、全局异常处理。
+   - 下一步：先实现 Auth + Media Controller 雏形（含统一响应包装与校验），再扩展统计/标签接口。
 
 ## P1 · 业务完善与数据一致性
 1. **Analytics & 统计接口**
@@ -35,10 +35,10 @@
 
 ## P2 · 工程化与质量保障
 1. **测试覆盖 / Testing**
-   - 扩展 Mapper & Service 层单测；为未来 Controller 写集成测试。
-   - 需要针对 SQL 触发器/存储过程编写验证脚本或测试。
+   - Mapper 层已有多项集成测试，Service 与未来 Controller 仍缺用例。
+   - 下一步重点是补 Service/Controller 的单元与集成测试，并针对 SQL 触发器/存储过程编写验证脚本或测试。
 2. **配置分环境 / Config Profiles**
-   - `application.properties` 直接硬编码生产参数；需拆分 dev/test/prod，改用环境变量。
+   - `application.properties` 目前直连本地 `acgm` 数据库；需拆分 dev/test/prod，并改用环境变量/配置中心管理。
 3. **文档同步 / Documentation**
    - 确保 `ACGM Media Tracker New.md`、本文档、API 文档与代码保持一致。
 4. **CI/CD 与质量门禁**

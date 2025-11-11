@@ -139,12 +139,11 @@
 
 ### 3.2 尚未落地的 Schema / 差异列表
 
-- `progress_comic`：表结构与业务逻辑均缺失。
 - `tags.color` 等规划字段尚未出现在 SQL 与实体中。
 
 ### 3.3 自动管理字段约束
 - `users.email_norm`、`media_items.finish_month`、各 `*_at` 默认时间戳等列由数据库负责维护。Mapper/测试不得显式写入这些列，只能读取或在条件中使用（必要时对参数执行同样的归一化，如 `LOWER(TRIM(?))`）。
-- `MediaTagRel`（多对多关系）没有对应的 Entity / Mapper / Service。
+- `MediaTagRel` 的基础 Entity / Mapper / Service 已落地，尚待在媒体 CRUD / DTO 中串联业务逻辑。
 - 原文档提到的触发器、统计视图、存储过程示例仅在 SQL 模板中，尚未在代码中引用。
 
 ## 4. 持久化与服务实现 (Persistence & Services)
@@ -153,14 +152,14 @@
 - **Mapper 接口 + XML**：`mapper/` 包 + `src/main/resources/mapper/*.xml`，包含常规 CRUD（`selectById/selectAll/insert/update/delete`）。
 - **Service 接口**：`service/` 目录定义业务接口，主要职责是包装 Mapper 的 CRUD 并抛出 `ResourceNotFoundException`。
 - **Service 实现**：`service/impl/` 采用构造器注入 + `@Transactional`，复用 `ServiceBeanUtils.copyNonNullProperties` 做差异更新。
-- **缺口**：无 `MediaTagRel`、无跨表聚合、无业务校验（例如媒体类型与进度表一致由 DB Trigger 负责）。
+- **缺口**：`MediaTagRel` 尚未和媒体 CRUD/DTO 串联；仍缺跨表聚合与业务校验（例如媒体类型与进度表一致由 DB Trigger 负责）。
 
 ## 5. 配置、查询模板与测试 (Config & Tests)
 
-- **配置**：`src/main/resources/application.properties` 直连本地 MySQL（`jdbc:mysql://localhost:3306/acgm_tracker`），尚未区分 dev/test/prod，也未引入环境变量。
+- **配置**：`src/main/resources/application.properties` 直连本地 MySQL（`jdbc:mysql://localhost:3306/acgm`），尚未区分 dev/test/prod，也未引入环境变量。
 - **MyBatis 配置**：`mybatis.mapper-locations=classpath:mapper/*.xml`，`map-underscore-to-camel-case=true`。
 - **查询模板**：`queries.sql` 仅保存示例 SQL / 存储过程，不作为运行期依赖。
-- **测试**：`UserMapperTest` 通过事务回滚示范插入 + 查询；其余 Mapper/Service 暂无测试覆盖。
+- **测试**：`src/test/java/com/acgm/.../mapper` 目录下已有十余个 Mapper 集成测试（含 `MediaTagRelationMapperTest` 等）；Service 层仍待补充独立测试。
 
 ## 6. API / 控制层差异 (API & Controller Gap)
 
@@ -176,7 +175,7 @@
 
 1. **用户体系**：注册/登录、密码加密策略、偏好设置、资料编辑、数据导入导出。
 2. **内容管理扩展**：按类型自适应的 DTO、媒体 + 标签多对多的增删改查、逻辑删除与回收站、批量导入。
-3. **进度管理**：漫画进度表、跨类型的进度聚合视图、事务性创建（媒体条目 + 对应进度）
+3. **进度管理**：跨类型的进度聚合视图、事务性创建（媒体条目 + 对应进度）、将漫画进度与媒体 CRUD 过程打通
 4. **统计分析**：完成率、类型分布、趋势图、Top 榜；可选择使用 SQL 视图或 Spring Data 投影。
 5. **外部 API 集成**：Bangumi/RAWG/Spotify/OpenWeather 等 Client、同步任务、缓存策略（`media_api_info`）。
 6. **管理/系统模块**：后台页面、日志审计、主题 / 国际化设置、任务调度。
