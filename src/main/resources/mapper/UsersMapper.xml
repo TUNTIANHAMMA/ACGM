@@ -42,7 +42,6 @@
         INSERT INTO users (
             username,
             email,
-            email_norm,
             password,
             role,
             created_at,
@@ -50,7 +49,6 @@
         ) VALUES (
             #{username},
             #{email},
-            #{emailNorm},
             #{password},
             #{role},
             #{createdAt},
@@ -63,7 +61,6 @@
         SET
             username = #{username},
             email = #{email},
-            email_norm = #{emailNorm},
             password = #{password},
             role = #{role},
             updated_at = #{updatedAt}
