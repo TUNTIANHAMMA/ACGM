@@ -3,6 +3,7 @@ package com.acgm.acgmmediatracker.mapper;
 import com.acgm.acgmmediatracker.entity.MediaItem;
 import com.acgm.acgmmediatracker.entity.Tag;
 import com.acgm.acgmmediatracker.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
@@ -12,19 +13,20 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class MapperTestHelper {
 
     private final UserMapper userMapper;
     private final MediaItemMapper mediaItemMapper;
     private final TagMapper tagMapper;
 
-    public MapperTestHelper(UserMapper userMapper,
-                            MediaItemMapper mediaItemMapper,
-                            TagMapper tagMapper) {
-        this.userMapper = userMapper;
-        this.mediaItemMapper = mediaItemMapper;
-        this.tagMapper = tagMapper;
-    }
+//    public MapperTestHelper(UserMapper userMapper,
+//                            MediaItemMapper mediaItemMapper,
+//                            TagMapper tagMapper) {
+//        this.userMapper = userMapper;
+//        this.mediaItemMapper = mediaItemMapper;
+//        this.tagMapper = tagMapper;
+//    }
 
     public User createUser() {
         User user = new User();
