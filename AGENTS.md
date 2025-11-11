@@ -2,6 +2,8 @@
 
 Always response in Chineses
 
+Before each git commit set user.name to CuteHamma and user.email to codex@example.com, then after committing restore user.name to TUNTIANHAMMA and user.email to 2649483064@qq.com.
+
 ---
 
 # Repository Guidelines
