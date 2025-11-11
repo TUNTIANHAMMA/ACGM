@@ -5,21 +5,21 @@
 > Objective: bring the codebase to feature parity with the original spec by tackling the gaps listed below in priority order.
 
 ## P0 · 核心差异（必须优先解决）
-1. **REST 控制层 / REST Controllers**
-   - Controller 目录缺失，所有 CRUD/统计 API 未暴露。
-   - 需设计请求/响应 DTO、统一返回格式、全局异常处理。
-2. **认证与账号体系 / Auth & Account**
-   - 缺注册/登录流程、密码加密、JWT/Session；`users` 表未含 `preference` JSON。
-   - 需要引入 Spring Security 或等效方案，并落地偏好字段及业务逻辑。
-3. **标签多对多支撑 / Media-Tag Relation**
+1. **标签多对多支撑 / Media-Tag Relation**
    - SQL 中有 `media_tag_rel`，但 Java 实体/Mapper/Service 未实现。
    - 需完善增删改查流程、在媒体 CRUD 中整合标签同步。
-4. **漫画进度管理 / Progress (Comic)**
+2. **漫画进度管理 / Progress (Comic)**
    - ✅ Schema（`progress_comic` + trigger）与 Entity/Mapper/Service 已落地，可等待后续 Controller/业务编排。
    - 下一步：在媒体 CRUD 中串联漫画进度创建/更新逻辑，并补测试。
-5. **外部 API 集成骨架 / External API Integration**
+3. **认证与账号体系 / Auth & Account**
+   - 缺注册/登录流程、密码加密、JWT/Session；`users` 表未含 `preference` JSON。
+   - 需要引入 Spring Security 或等效方案，并落地偏好字段及业务逻辑。
+4. **外部 API 集成骨架 / External API Integration**
    - `media_api_info` 仅作为缓存表存在，无实际同步/client 调用。
    - 定义抽象 client/service，至少完成一个 demo 集成（如 Bangumi）。
+5. **REST 控制层 / REST Controllers**
+   - Controller 目录缺失，所有 CRUD/统计 API 未暴露。
+   - 需设计请求/响应 DTO、统一返回格式、全局异常处理。
 
 ## P1 · 业务完善与数据一致性
 1. **Analytics & 统计接口**
