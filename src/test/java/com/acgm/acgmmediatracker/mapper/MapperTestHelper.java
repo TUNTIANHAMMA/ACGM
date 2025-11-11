@@ -58,8 +58,6 @@ public class MapperTestHelper {
         item.setCreatedAt(now);
         item.setUpdatedAt(now);
         item.setDeletedAt(null);
-        item.setRowVersion(0);
-        item.setFinishMonth(today.getYear() * 100L + today.getMonthValue());
         mediaItemMapper.insert(item);
         return item;
     }

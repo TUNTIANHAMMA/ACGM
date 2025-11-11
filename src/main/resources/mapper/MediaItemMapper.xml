@@ -69,8 +69,7 @@
             created_at,
             updated_at,
             deleted_at,
-            row_version,
-            finish_month
+            row_version
         ) VALUES (
             #{userId},
             #{type},
@@ -85,8 +84,7 @@
             #{createdAt},
             #{updatedAt},
             #{deletedAt},
-            #{rowVersion},
-            #{finishMonth}
+            #{rowVersion}
         )
     </insert>
 
@@ -105,8 +103,7 @@
             source = #{source},
             updated_at = #{updatedAt},
             deleted_at = #{deletedAt},
-            row_version = #{rowVersion},
-            finish_month = #{finishMonth}
+            row_version = #{rowVersion}
         WHERE id = #{id}
     </update>
 

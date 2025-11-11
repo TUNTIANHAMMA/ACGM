@@ -43,7 +43,7 @@
 | created_at | DATETIME | 默认 CURRENT_TIMESTAMP |
 | updated_at | DATETIME | 自动更新时间 |
 
-> 已同步：新增 `preference JSON` 列用于存储用户偏好。
+> 已同步：新增 `preference JSON` 列用于存储用户偏好；`email_norm` 为 MySQL 生成列，只允许在查询中使用，禁止由 Java 代码手动赋值。
 
 #### media_items
 
@@ -59,6 +59,8 @@
 | created_at / updated_at / deleted_at | DATETIME | 审计字段 |
 | row_version | BIGINT | 并发控制 |
 | finish_month | INT | 生成列：YYYYMM |
+
+> `finish_month` 由 MySQL 根据 `finish_date` 自动生成，插入/更新语句中无需、也不得手动设置；Java 侧仅可读取。
 
 #### tags
 
@@ -138,6 +140,9 @@
 
 - `progress_comic`：表结构与业务逻辑均缺失。
 - `tags.color`、`media_tag_rel.create_time` 等规划字段尚未出现在 SQL 与实体中。
+
+### 3.3 自动管理字段约束
+- `users.email_norm`、`media_items.finish_month`、各 `*_at` 默认时间戳等列由数据库负责维护。Mapper/测试不得显式写入这些列，只能读取或在条件中使用（必要时对参数执行同样的归一化，如 `LOWER(TRIM(?))`）。
 - `MediaTagRel`（多对多关系）没有对应的 Entity / Mapper / Service。
 - 原文档提到的触发器、统计视图、存储过程示例仅在 SQL 模板中，尚未在代码中引用。
 

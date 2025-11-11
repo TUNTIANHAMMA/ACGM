@@ -29,6 +29,7 @@ Before each git commit set user.name to CuteHamma and user.email to codex@exampl
 - Use `@SpringBootTest` for integration coverage and Mockito-based slices for unit logic when practical.
 - Name tests after the behavior under test (e.g., `MediaControllerTests.fetchItemsReturns200`).
 - Add regression tests adjacent to the class under change, and keep coverage high on mapper SQL since MyBatis errors surface at runtime.
+- Never set database-managed columns (e.g., `users.email_norm`, `media_items.finish_month`, auto timestamps) inside Java code or tests; rely on MySQL defaults/GENERATED columns instead.
 
 ## Commit & Pull Request Guidelines
 - Follow the existing imperative style (`Initial commit`): short subject (<72 chars) plus optional detail body.
