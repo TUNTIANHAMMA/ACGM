@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.MediaApiInfoMapper">
+
+    <resultMap id="MediaApiInfoResultMap" type="com.acgm.acgmmediatracker.entity.MediaApiInfo">
+        <id property="id" column="id" />
+        <result property="mediaId" column="media_id" />
+        <result property="apiSource" column="api_source" />
+        <result property="apiId" column="api_id" />
+        <result property="payload" column="payload" />
+        <result property="lastSync" column="last_sync" />
+    </resultMap>
+
+    <sql id="MediaApiInfo_Columns">
+        /* columns */
+        id,
+        media_id,
+        api_source,
+        api_id,
+        payload,
+        last_sync
+    </sql>
+
+    <select id="selectById" resultMap="MediaApiInfoResultMap">
+        SELECT <include refid="MediaApiInfo_Columns" />
+        FROM media_api_info
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="MediaApiInfoResultMap">
+        SELECT <include refid="MediaApiInfo_Columns" />
+        FROM media_api_info
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.acgm.acgmmediatracker.entity.MediaApiInfo">
+        INSERT INTO media_api_info (
+            media_id,
+            api_source,
+            api_id,
+            payload,
+            last_sync
+        ) VALUES (
+            #{mediaId},
+            #{apiSource},
+            #{apiId},
+            #{payload},
+            #{lastSync}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.MediaApiInfo">
+        UPDATE media_api_info
+        SET
+            media_id = #{mediaId},
+            api_source = #{apiSource},
+            api_id = #{apiId},
+            payload = #{payload},
+            last_sync = #{lastSync}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM media_api_info
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

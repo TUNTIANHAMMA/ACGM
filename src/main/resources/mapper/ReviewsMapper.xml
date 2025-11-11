@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.ReviewsMapper">
+
+    <resultMap id="ReviewsResultMap" type="com.acgm.acgmmediatracker.entity.Reviews">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="mediaId" column="media_id" />
+        <result property="rating" column="rating" />
+        <result property="content" column="content" />
+        <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <sql id="Reviews_Columns">
+        id,
+        user_id,
+        media_id,
+        rating,
+        content,
+        created_at
+    </sql>
+
+    <select id="selectById" resultMap="ReviewsResultMap">
+        SELECT <include refid="Reviews_Columns" />
+        FROM reviews
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="ReviewsResultMap">
+        SELECT <include refid="Reviews_Columns" />
+        FROM reviews
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.acgm.acgmmediatracker.entity.Reviews">
+        INSERT INTO reviews (
+            user_id,
+            media_id,
+            rating,
+            content,
+            created_at
+        ) VALUES (
+            #{userId},
+            #{mediaId},
+            #{rating},
+            #{content},
+            #{createdAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.Reviews">
+        UPDATE reviews
+        SET
+            user_id = #{userId},
+            media_id = #{mediaId},
+            rating = #{rating},
+            content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM reviews
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.ProgressGameMapper">
+
+    <resultMap id="ProgressGameResultMap" type="com.acgm.acgmmediatracker.entity.ProgressGame">
+        <id property="mediaId" column="media_id" />
+        <result property="platform" column="platform" />
+        <result property="completionPercent" column="completion_percent" />
+        <result property="playTimeHours" column="play_time_hours" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="ProgressGame_Columns">
+        media_id,
+        platform,
+        completion_percent,
+        play_time_hours,
+        updated_at
+    </sql>
+
+    <select id="selectByMediaId" resultMap="ProgressGameResultMap">
+        SELECT <include refid="ProgressGame_Columns" />
+        FROM progress_game
+        WHERE media_id = #{mediaId}
+    </select>
+
+    <select id="selectAll" resultMap="ProgressGameResultMap">
+        SELECT <include refid="ProgressGame_Columns" />
+        FROM progress_game
+    </select>
+
+    <insert id="insert" parameterType="com.acgm.acgmmediatracker.entity.ProgressGame">
+        INSERT INTO progress_game (
+            media_id,
+            platform,
+            completion_percent,
+            play_time_hours,
+            updated_at
+        ) VALUES (
+            #{mediaId},
+            #{platform},
+            #{completionPercent},
+            #{playTimeHours},
+            #{updatedAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.ProgressGame">
+        UPDATE progress_game
+        SET
+            platform = #{platform},
+            completion_percent = #{completionPercent},
+            play_time_hours = #{playTimeHours},
+            updated_at = #{updatedAt}
+        WHERE media_id = #{mediaId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM progress_game
+        WHERE media_id = #{mediaId}
+    </delete>
+
+</mapper>

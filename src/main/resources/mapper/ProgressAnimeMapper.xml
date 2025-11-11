@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.ProgressAnimeMapper">
+
+    <resultMap id="ProgressAnimeResultMap" type="com.acgm.acgmmediatracker.entity.ProgressAnime">
+        <id property="mediaId" column="media_id" />
+        <result property="currentEpisode" column="current_episode" />
+        <result property="totalEpisodes" column="total_episodes" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="ProgressAnime_Columns">
+        media_id,
+        current_episode,
+        total_episodes,
+        updated_at
+    </sql>
+
+    <select id="selectByMediaId" resultMap="ProgressAnimeResultMap">
+        SELECT <include refid="ProgressAnime_Columns" />
+        FROM progress_anime
+        WHERE media_id = #{mediaId}
+    </select>
+
+    <select id="selectAll" resultMap="ProgressAnimeResultMap">
+        SELECT <include refid="ProgressAnime_Columns" />
+        FROM progress_anime
+    </select>
+
+    <insert id="insert" parameterType="com.acgm.acgmmediatracker.entity.ProgressAnime">
+        INSERT INTO progress_anime (
+            media_id,
+            current_episode,
+            total_episodes,
+            updated_at
+        ) VALUES (
+            #{mediaId},
+            #{currentEpisode},
+            #{totalEpisodes},
+            #{updatedAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.ProgressAnime">
+        UPDATE progress_anime
+        SET
+            current_episode = #{currentEpisode},
+            total_episodes = #{totalEpisodes},
+            updated_at = #{updatedAt}
+        WHERE media_id = #{mediaId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM progress_anime
+        WHERE media_id = #{mediaId}
+    </delete>
+
+</mapper>

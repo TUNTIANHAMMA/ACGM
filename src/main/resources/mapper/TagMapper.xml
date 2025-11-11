@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.TagMapper">
+
+    <resultMap id="TagResultMap" type="com.acgm.acgmmediatracker.entity.Tag">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="name" column="name" />
+        <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <sql id="Tag_Columns">
+        id,
+        user_id,
+        name,
+        created_at
+    </sql>
+
+    <select id="selectById" resultMap="TagResultMap">
+        SELECT <include refid="Tag_Columns" />
+        FROM tags
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="TagResultMap">
+        SELECT <include refid="Tag_Columns" />
+        FROM tags
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.acgm.acgmmediatracker.entity.Tag">
+        INSERT INTO tags (
+            user_id,
+            name,
+            created_at
+        ) VALUES (
+            #{userId},
+            #{name},
+            #{createdAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.Tag">
+        UPDATE tags
+        SET
+            user_id = #{userId},
+            name = #{name}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tags
+        WHERE id = #{id}
+    </delete>
+
+</mapper>
