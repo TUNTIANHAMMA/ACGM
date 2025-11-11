@@ -79,9 +79,10 @@
 | --- | --- | --- |
 | media_id | BIGINT UNSIGNED | FK → media_items.id |
 | tag_id | BIGINT UNSIGNED | FK → tags.id |
+| create_time | DATETIME | 默认 `CURRENT_TIMESTAMP` |
 | PRIMARY KEY (media_id, tag_id) |
 
-> 差异：无 `create_time` 列；Java 侧缺少实体/Mapper。
+> 差异：已补齐 `create_time` 列并同步 Java 实体/Mapper。
 
 #### favorites
 
@@ -139,7 +140,7 @@
 ### 3.2 尚未落地的 Schema / 差异列表
 
 - `progress_comic`：表结构与业务逻辑均缺失。
-- `tags.color`、`media_tag_rel.create_time` 等规划字段尚未出现在 SQL 与实体中。
+- `tags.color` 等规划字段尚未出现在 SQL 与实体中。
 
 ### 3.3 自动管理字段约束
 - `users.email_norm`、`media_items.finish_month`、各 `*_at` 默认时间戳等列由数据库负责维护。Mapper/测试不得显式写入这些列，只能读取或在条件中使用（必要时对参数执行同样的归一化，如 `LOWER(TRIM(?))`）。
