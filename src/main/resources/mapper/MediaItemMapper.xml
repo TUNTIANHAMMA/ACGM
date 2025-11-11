@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.acgm.acgmmediatracker.mapper.MediaItemsMapper">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.MediaItemMapper">
 
-    <resultMap id="MediaItemsResultMap" type="com.acgm.acgmmediatracker.entity.MediaItems">
+    <resultMap id="MediaItemResultMap" type="com.acgm.acgmmediatracker.entity.MediaItem">
         <id property="id" column="id" />
         <result property="userId" column="user_id" />
         <result property="type" column="type" />
@@ -23,7 +23,7 @@
         <result property="finishMonth" column="finish_month" />
     </resultMap>
 
-    <sql id="MediaItems_Columns">
+    <sql id="MediaItem_Columns">
         id,
         user_id,
         type,
@@ -42,19 +42,19 @@
         finish_month
     </sql>
 
-    <select id="selectById" resultMap="MediaItemsResultMap">
-        SELECT <include refid="MediaItems_Columns" />
+    <select id="selectById" resultMap="MediaItemResultMap">
+        SELECT <include refid="MediaItem_Columns" />
         FROM media_items
         WHERE id = #{id}
     </select>
 
-    <select id="selectAll" resultMap="MediaItemsResultMap">
-        SELECT <include refid="MediaItems_Columns" />
+    <select id="selectAll" resultMap="MediaItemResultMap">
+        SELECT <include refid="MediaItem_Columns" />
         FROM media_items
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.acgm.acgmmediatracker.entity.MediaItems">
+            parameterType="com.acgm.acgmmediatracker.entity.MediaItem">
         INSERT INTO media_items (
             user_id,
             type,
@@ -90,7 +90,7 @@
         )
     </insert>
 
-    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.MediaItems">
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.MediaItem">
         UPDATE media_items
         SET
             user_id = #{userId},

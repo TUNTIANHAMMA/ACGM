@@ -1,8 +1,8 @@
 package com.acgm.acgmmediatracker.service.impl;
 
-import com.acgm.acgmmediatracker.entity.Reviews;
-import com.acgm.acgmmediatracker.mapper.ReviewsMapper;
-import com.acgm.acgmmediatracker.service.ReviewsService;
+import com.acgm.acgmmediatracker.entity.Review;
+import com.acgm.acgmmediatracker.mapper.ReviewMapper;
+import com.acgm.acgmmediatracker.service.ReviewService;
 import com.acgm.acgmmediatracker.service.exception.ResourceNotFoundException;
 import com.acgm.acgmmediatracker.service.util.ServiceBeanUtils;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +16,13 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ReviewsServiceImpl implements ReviewsService {
+public class ReviewServiceImpl implements ReviewService {
 
-    private final ReviewsMapper reviewsMapper;
+    private final ReviewMapper reviewMapper;
 
     @Override
-    public Reviews getById(long id) {
-        Reviews review = reviewsMapper.selectById(id);
+    public Review getById(long id) {
+        Review review = reviewMapper.selectById(id);
         if (review == null) {
             throw new ResourceNotFoundException("未找到点评记录，ID=" + id);
         }
@@ -30,27 +30,27 @@ public class ReviewsServiceImpl implements ReviewsService {
     }
 
     @Override
-    public List<Reviews> listAll() {
-        List<Reviews> reviews = reviewsMapper.selectAll();
+    public List<Review> listAll() {
+        List<Review> reviews = reviewMapper.selectAll();
         return reviews == null ? Collections.emptyList() : reviews;
     }
 
     @Override
     @Transactional
-    public Reviews create(Reviews reviews) {
-        Objects.requireNonNull(reviews, "点评实体不能为空");
-        reviewsMapper.insert(reviews);
-        return getById(reviews.getId());
+    public Review create(Review review) {
+        Objects.requireNonNull(review, "点评实体不能为空");
+        reviewMapper.insert(review);
+        return getById(review.getId());
     }
 
     @Override
     @Transactional
-    public Reviews update(long id, Reviews reviews) {
-        Objects.requireNonNull(reviews, "点评实体不能为空");
-        Reviews existing = getById(id);
-        ServiceBeanUtils.copyNonNullProperties(reviews, existing);
+    public Review update(long id, Review review) {
+        Objects.requireNonNull(review, "点评实体不能为空");
+        Review existing = getById(id);
+        ServiceBeanUtils.copyNonNullProperties(review, existing);
         existing.setId(id);
-        reviewsMapper.update(existing);
+        reviewMapper.update(existing);
         return getById(id);
     }
 
@@ -58,6 +58,6 @@ public class ReviewsServiceImpl implements ReviewsService {
     @Transactional
     public void delete(long id) {
         getById(id);
-        reviewsMapper.delete(id);
+        reviewMapper.delete(id);
     }
 }

@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class MediaItems {
+public class MediaItem {
 
   private long id;
   private long userId;

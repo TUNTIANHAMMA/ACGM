@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Favorites {
+public class Favorite {
 
   private long id;
   private long userId;

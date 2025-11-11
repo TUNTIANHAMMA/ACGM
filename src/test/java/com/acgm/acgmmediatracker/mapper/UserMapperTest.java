@@ -1,6 +1,6 @@
 package com.acgm.acgmmediatracker.mapper;
 
-import com.acgm.acgmmediatracker.entity.Users;
+import com.acgm.acgmmediatracker.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,14 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 @Rollback
-class UsersMapperTest {
+class UserMapperTest {
 
     @Autowired
-    private UsersMapper usersMapper;
+    private UserMapper userMapper;
 
     @Test
     void selectByIdReturnsInsertedUser() {
-        Users user = new Users();
+        User user = new User();
         user.setUsername("test-user");
         user.setEmail("user@example.com");
         user.setEmailNorm("user@example.com");
@@ -32,9 +32,9 @@ class UsersMapperTest {
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
 
-        usersMapper.insert(user);
+        userMapper.insert(user);
 
-        Users found = usersMapper.selectById(user.getId());
+        User found = userMapper.selectById(user.getId());
         assertThat(found).isNotNull();
         assertThat(found.getUsername()).isEqualTo("test-user");
         assertThat(found.getEmail()).isEqualTo("user@example.com");

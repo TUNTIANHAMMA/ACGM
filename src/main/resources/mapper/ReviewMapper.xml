@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.acgm.acgmmediatracker.mapper.ReviewsMapper">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.ReviewMapper">
 
-    <resultMap id="ReviewsResultMap" type="com.acgm.acgmmediatracker.entity.Reviews">
+    <resultMap id="ReviewResultMap" type="com.acgm.acgmmediatracker.entity.Review">
         <id property="id" column="id" />
         <result property="userId" column="user_id" />
         <result property="mediaId" column="media_id" />
@@ -13,7 +13,7 @@
         <result property="createdAt" column="created_at" />
     </resultMap>
 
-    <sql id="Reviews_Columns">
+    <sql id="Review_Columns">
         id,
         user_id,
         media_id,
@@ -22,19 +22,19 @@
         created_at
     </sql>
 
-    <select id="selectById" resultMap="ReviewsResultMap">
-        SELECT <include refid="Reviews_Columns" />
+    <select id="selectById" resultMap="ReviewResultMap">
+        SELECT <include refid="Review_Columns" />
         FROM reviews
         WHERE id = #{id}
     </select>
 
-    <select id="selectAll" resultMap="ReviewsResultMap">
-        SELECT <include refid="Reviews_Columns" />
+    <select id="selectAll" resultMap="ReviewResultMap">
+        SELECT <include refid="Review_Columns" />
         FROM reviews
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.acgm.acgmmediatracker.entity.Reviews">
+            parameterType="com.acgm.acgmmediatracker.entity.Review">
         INSERT INTO reviews (
             user_id,
             media_id,
@@ -50,7 +50,7 @@
         )
     </insert>
 
-    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.Reviews">
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.Review">
         UPDATE reviews
         SET
             user_id = #{userId},

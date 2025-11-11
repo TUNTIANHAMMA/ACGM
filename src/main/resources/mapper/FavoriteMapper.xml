@@ -2,35 +2,35 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.acgm.acgmmediatracker.mapper.FavoritesMapper">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.FavoriteMapper">
 
-    <resultMap id="FavoritesResultMap" type="com.acgm.acgmmediatracker.entity.Favorites">
+    <resultMap id="FavoriteResultMap" type="com.acgm.acgmmediatracker.entity.Favorite">
         <id property="id" column="id" />
         <result property="userId" column="user_id" />
         <result property="mediaId" column="media_id" />
         <result property="createdAt" column="created_at" />
     </resultMap>
 
-    <sql id="Favorites_Columns">
+    <sql id="Favorite_Columns">
         id,
         user_id,
         media_id,
         created_at
     </sql>
 
-    <select id="selectById" resultMap="FavoritesResultMap">
-        SELECT <include refid="Favorites_Columns" />
+    <select id="selectById" resultMap="FavoriteResultMap">
+        SELECT <include refid="Favorite_Columns" />
         FROM favorites
         WHERE id = #{id}
     </select>
 
-    <select id="selectAll" resultMap="FavoritesResultMap">
-        SELECT <include refid="Favorites_Columns" />
+    <select id="selectAll" resultMap="FavoriteResultMap">
+        SELECT <include refid="Favorite_Columns" />
         FROM favorites
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.acgm.acgmmediatracker.entity.Favorites">
+            parameterType="com.acgm.acgmmediatracker.entity.Favorite">
         INSERT INTO favorites (
             user_id,
             media_id,
@@ -42,7 +42,7 @@
         )
     </insert>
 
-    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.Favorites">
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.Favorite">
         UPDATE favorites
         SET
             user_id = #{userId},

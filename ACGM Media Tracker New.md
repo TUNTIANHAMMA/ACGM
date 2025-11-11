@@ -22,7 +22,7 @@
 | 标签多对多 | 记录标签与内容映射 | ⚠️ SQL 已建 `media_tag_rel`，但尚无 Java 实体、Mapper、Service | 需新增 `MediaTagRel` 相关代码 |
 | 进度 - 漫画 | 支持章节/卷管理 | ❌ 未实现：数据库无 `progress_comic`，代码亦无 | 需扩展 schema + Mapper |
 | 存储过程 & Queries | 模板划分 queries.SQL | ✅ 最新拆分：`queries.sql` 保留模板示例，不影响核心开发 | 位于 `src/main/resources/queries.sql` |
-| 测试层 | 覆盖 Mapper/Service | 🟡 部分：仅有 `UsersMapperTest` 学示例 | 应补充其余 Mapper/Service 测试 |
+| 测试层 | 覆盖 Mapper/Service | 🟡 部分：仅有 `UserMapperTest` 学示例 | 应补充其余 Mapper/Service 测试 |
 
 ## 3. 数据模型 (Data Model)
 
@@ -154,7 +154,7 @@
 - **配置**：`src/main/resources/application.properties` 直连本地 MySQL（`jdbc:mysql://localhost:3306/acgm_tracker`），尚未区分 dev/test/prod，也未引入环境变量。
 - **MyBatis 配置**：`mybatis.mapper-locations=classpath:mapper/*.xml`，`map-underscore-to-camel-case=true`。
 - **查询模板**：`queries.sql` 仅保存示例 SQL / 存储过程，不作为运行期依赖。
-- **测试**：`UsersMapperTest` 通过事务回滚示范插入 + 查询；其余 Mapper/Service 暂无测试覆盖。
+- **测试**：`UserMapperTest` 通过事务回滚示范插入 + 查询；其余 Mapper/Service 暂无测试覆盖。
 
 ## 6. API / 控制层差异 (API & Controller Gap)
 
@@ -182,6 +182,6 @@
 - `src/main/resources/acgm_my_sql_schema_query_templates_my_sql_8_x.sql` — 最新 schema。
 - `src/main/resources/mapper/*.xml` — Mapper SQL。
 - `src/main/java/com/acgm/acgmmediatracker/service/**` — 业务实现。
-- `src/test/java/com/acgm/acgmmediatracker/mapper/UsersMapperTest.java` — 当前示例测试。
+- `src/test/java/com/acgm/acgmmediatracker/mapper/UserMapperTest.java` — 当前示例测试。
 
 > 下一步建议：在保持此文档同步更新的同时，为每个 Backlog 特性建立 Issue / 任务列表，逐步实现原始愿景。

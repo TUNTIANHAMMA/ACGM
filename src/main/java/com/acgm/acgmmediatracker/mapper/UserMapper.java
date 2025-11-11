@@ -1,21 +1,21 @@
 package com.acgm.acgmmediatracker.mapper;
 
-import com.acgm.acgmmediatracker.entity.Users;
+import com.acgm.acgmmediatracker.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
-public interface UsersMapper {
+public interface UserMapper {
 
-    Users selectById(@Param("id") long id);
+    User selectById(@Param("id") long id);
 
-    List<Users> selectAll();
+    List<User> selectAll();
 
-    int insert(Users user);
+    int insert(User user);
 
-    int update(Users user);
+    int update(User user);
 
     int delete(@Param("id") long id);
 }

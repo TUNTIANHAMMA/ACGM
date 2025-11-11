@@ -1,8 +1,8 @@
 package com.acgm.acgmmediatracker.service.impl;
 
-import com.acgm.acgmmediatracker.entity.Users;
-import com.acgm.acgmmediatracker.mapper.UsersMapper;
-import com.acgm.acgmmediatracker.service.UsersService;
+import com.acgm.acgmmediatracker.entity.User;
+import com.acgm.acgmmediatracker.mapper.UserMapper;
+import com.acgm.acgmmediatracker.service.UserService;
 import com.acgm.acgmmediatracker.service.exception.ResourceNotFoundException;
 import com.acgm.acgmmediatracker.service.util.ServiceBeanUtils;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +16,13 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UsersServiceImpl implements UsersService {
+public class UserServiceImpl implements UserService {
 
-    private final UsersMapper usersMapper;
+    private final UserMapper userMapper;
 
     @Override
-    public Users getById(long id) {
-        Users user = usersMapper.selectById(id);
+    public User getById(long id) {
+        User user = userMapper.selectById(id);
         if (user == null) {
             throw new ResourceNotFoundException("未找到指定用户，ID=" + id);
         }
@@ -30,27 +30,27 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public List<Users> listAll() {
-        List<Users> users = usersMapper.selectAll();
+    public List<User> listAll() {
+        List<User> users = userMapper.selectAll();
         return users == null ? Collections.emptyList() : users;
     }
 
     @Override
     @Transactional
-    public Users create(Users user) {
+    public User create(User user) {
         Objects.requireNonNull(user, "用户实体不能为空");
-        usersMapper.insert(user);
+        userMapper.insert(user);
         return getById(user.getId());
     }
 
     @Override
     @Transactional
-    public Users update(long id, Users user) {
+    public User update(long id, User user) {
         Objects.requireNonNull(user, "用户实体不能为空");
-        Users existing = getById(id);
+        User existing = getById(id);
         ServiceBeanUtils.copyNonNullProperties(user, existing);
         existing.setId(id);
-        usersMapper.update(existing);
+        userMapper.update(existing);
         return getById(id);
     }
 
@@ -58,6 +58,6 @@ public class UsersServiceImpl implements UsersService {
     @Transactional
     public void delete(long id) {
         getById(id);
-        usersMapper.delete(id);
+        userMapper.delete(id);
     }
 }

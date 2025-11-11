@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Reviews {
+public class Review {
 
   private long id;
   private long userId;

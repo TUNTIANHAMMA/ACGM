@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.acgm.acgmmediatracker.mapper.UsersMapper">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.UserMapper">
 
-    <resultMap id="UsersResultMap" type="com.acgm.acgmmediatracker.entity.Users">
+    <resultMap id="UserResultMap" type="com.acgm.acgmmediatracker.entity.User">
         <id property="id" column="id" />
         <result property="username" column="username" />
         <result property="email" column="email" />
@@ -15,7 +15,7 @@
         <result property="updatedAt" column="updated_at" />
     </resultMap>
 
-    <sql id="Users_Columns">
+    <sql id="User_Columns">
         id,
         username,
         email,
@@ -26,19 +26,19 @@
         updated_at
     </sql>
 
-    <select id="selectById" resultMap="UsersResultMap">
-        SELECT <include refid="Users_Columns" />
+    <select id="selectById" resultMap="UserResultMap">
+        SELECT <include refid="User_Columns" />
         FROM users
         WHERE id = #{id}
     </select>
 
-    <select id="selectAll" resultMap="UsersResultMap">
-        SELECT <include refid="Users_Columns" />
+    <select id="selectAll" resultMap="UserResultMap">
+        SELECT <include refid="User_Columns" />
         FROM users
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.acgm.acgmmediatracker.entity.Users">
+            parameterType="com.acgm.acgmmediatracker.entity.User">
         INSERT INTO users (
             username,
             email,
@@ -56,7 +56,7 @@
         )
     </insert>
 
-    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.Users">
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.User">
         UPDATE users
         SET
             username = #{username},
