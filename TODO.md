@@ -15,8 +15,8 @@
    - SQL 中有 `media_tag_rel`，但 Java 实体/Mapper/Service 未实现。
    - 需完善增删改查流程、在媒体 CRUD 中整合标签同步。
 4. **漫画进度管理 / Progress (Comic)**
-   - 原规范包含 `progress_comic`，当前 schema/代码都缺失。
-   - 需扩展数据库、Mapper、Service，并确定与媒体类型绑定逻辑。
+   - ✅ Schema（`progress_comic` + trigger）与 Entity/Mapper/Service 已落地，可等待后续 Controller/业务编排。
+   - 下一步：在媒体 CRUD 中串联漫画进度创建/更新逻辑，并补测试。
 5. **外部 API 集成骨架 / External API Integration**
    - `media_api_info` 仅作为缓存表存在，无实际同步/client 调用。
    - 定义抽象 client/service，至少完成一个 demo 集成（如 Bangumi）。

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.ProgressComicMapper">
+
+    <resultMap id="ProgressComicResultMap" type="com.acgm.acgmmediatracker.entity.ProgressComic">
+        <id property="mediaId" column="media_id" />
+        <result property="currentChapter" column="current_chapter" />
+        <result property="totalChapters" column="total_chapters" />
+        <result property="currentVolume" column="current_volume" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="ProgressComic_Columns">
+        media_id,
+        current_chapter,
+        total_chapters,
+        current_volume,
+        updated_at
+    </sql>
+
+    <select id="selectByMediaId" resultMap="ProgressComicResultMap">
+        SELECT <include refid="ProgressComic_Columns" />
+        FROM progress_comic
+        WHERE media_id = #{mediaId}
+    </select>
+
+    <select id="selectAll" resultMap="ProgressComicResultMap">
+        SELECT <include refid="ProgressComic_Columns" />
+        FROM progress_comic
+    </select>
+
+    <insert id="insert" parameterType="com.acgm.acgmmediatracker.entity.ProgressComic">
+        INSERT INTO progress_comic (
+            media_id,
+            current_chapter,
+            total_chapters,
+            current_volume,
+            updated_at
+        ) VALUES (
+            #{mediaId},
+            #{currentChapter},
+            #{totalChapters},
+            #{currentVolume},
+            #{updatedAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.ProgressComic">
+        UPDATE progress_comic
+        SET
+            current_chapter = #{currentChapter},
+            total_chapters = #{totalChapters},
+            current_volume = #{currentVolume},
+            updated_at = #{updatedAt}
+        WHERE media_id = #{mediaId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM progress_comic
+        WHERE media_id = #{mediaId}
+    </delete>
+
+</mapper>
