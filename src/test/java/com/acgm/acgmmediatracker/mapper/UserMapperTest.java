@@ -20,6 +20,9 @@ class UserMapperTest {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private MapperTestHelper helper;
+
     @Test
     void selectByIdReturnsInsertedUser() {
         User user = new User();
@@ -40,5 +43,13 @@ class UserMapperTest {
         assertThat(found.getEmail()).isEqualTo("user@example.com");
         assertThat(found.getPreference().replaceAll("\\s+", ""))
                 .contains("{\"theme\":\"dark\"}");
+    }
+
+    @Test
+    void selectByEmailIsCaseInsensitive() {
+        User user = helper.createUser();
+        User found = userMapper.selectByEmail(user.getEmail().toUpperCase());
+        assertThat(found).isNotNull();
+        assertThat(found.getId()).isEqualTo(user.getId());
     }
 }
