@@ -49,7 +49,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_media_list_basic $$
 CREATE PROCEDURE sp_media_list_basic(
     IN p_user_id BIGINT UNSIGNED,
-    IN p_type ENUM('anime','manga','game','music','movie','tv'),
+    IN p_type ENUM('anime','comic','game','music','movie','tv'),
     IN p_status ENUM('planned','in_progress','completed','dropped','on_hold'),
     IN p_rating_min DECIMAL(3,1),
     IN p_keyword VARCHAR(255),

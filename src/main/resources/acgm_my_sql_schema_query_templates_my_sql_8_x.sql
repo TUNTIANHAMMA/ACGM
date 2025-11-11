@@ -6,10 +6,10 @@ SET SQL_SAFE_UPDATES = 0;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS `acgm_tracker`
+CREATE DATABASE IF NOT EXISTS `acgm`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_0900_ai_ci;
-USE `acgm_tracker`;
+USE `acgm`;
 
 -- =========================================
 -- 1) Users
@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS media_items;
 CREATE TABLE media_items (
   id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id         BIGINT UNSIGNED NOT NULL,
-  type            ENUM('anime','manga','game','music','movie','tv') NOT NULL,
+  type            ENUM('anime','comic','game','music','movie','tv') NOT NULL,
   status          ENUM('planned','in_progress','completed','dropped','on_hold') NOT NULL DEFAULT 'planned',
   title           VARCHAR(255) NOT NULL,
   notes           TEXT NULL,
@@ -151,6 +151,18 @@ CREATE TABLE progress_anime (
   CONSTRAINT fk_pa_media FOREIGN KEY (media_id) REFERENCES media_items(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Comic/Manga progress
+DROP TABLE IF EXISTS progress_comic;
+CREATE TABLE progress_comic (
+  media_id         BIGINT UNSIGNED NOT NULL,
+  current_chapter  INT UNSIGNED NOT NULL DEFAULT 0,
+  total_chapters   INT UNSIGNED NULL,
+  current_volume   INT UNSIGNED NULL,
+  updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (media_id),
+  CONSTRAINT fk_pc_media FOREIGN KEY (media_id) REFERENCES media_items(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- Game progress
 DROP TABLE IF EXISTS progress_game;
 CREATE TABLE progress_game (
@@ -187,6 +199,16 @@ FOR EACH ROW
 BEGIN
   IF (SELECT type FROM media_items WHERE id = NEW.media_id) <> 'anime' THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'media.type must be anime for progress_anime';
+  END IF;
+END $$
+
+DROP TRIGGER IF EXISTS trg_progress_comic_type_guard $$
+CREATE TRIGGER trg_progress_comic_type_guard
+BEFORE INSERT ON progress_comic
+FOR EACH ROW
+BEGIN
+  IF (SELECT type FROM media_items WHERE id = NEW.media_id) <> 'comic' THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'media.type must be comic for progress_comic';
   END IF;
 END $$
 

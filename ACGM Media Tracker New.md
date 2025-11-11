@@ -51,7 +51,7 @@
 | --- | --- | --- |
 | id | BIGINT UNSIGNED | PK |
 | user_id | BIGINT UNSIGNED | FK → users.id |
-| type | ENUM('anime','manga','game','music','movie','tv') | 必填 |
+| type | ENUM('anime','comic','game','music','movie','tv') | 必填 |
 | status | ENUM('planned','in_progress','completed','dropped','on_hold') | 默认 planned |
 | title / notes / rating | VARCHAR / TEXT / DECIMAL | 标题、备注、评分 |
 | start_date / finish_date | DATE | 进度日期 |
