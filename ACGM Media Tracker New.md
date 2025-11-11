@@ -13,7 +13,7 @@
 
 | 模块 / Feature | 原始要求 | 当前实现 | 备注 / 代码路径 |
 | --- | --- | --- | --- |
-| 数据模型 & DAO | MySQL 8.x + MyBatis，覆盖用户、媒体、标签、收藏、评论、进度、API 缓存 | ✅ 已实现：实体、Mapper 与 XML、Service 层齐全；覆盖 `users`、`media_items`、`tags`、`media_tag_rel`(仅SQL)、`favorites`、`reviews`、`media_api_info`、`progress_anime/game/music` | `src/main/Java/.../entity|mapper|service`，SQL 脚本位于`src/main/resources` |
+| 数据模型 & DAO | MySQL 8.x + MyBatis，覆盖用户、媒体、标签、收藏、评论、进度、API 缓存 | ✅ 已实现：实体、Mapper 与 XML、Service 层齐全；覆盖 `users`、`media_items`、`tags`、`media_tag_rel`(仅 SQL)、`favorites`、`reviews`、`media_api_info`、`progress_anime/game/music` | `src/main/Java/.../entity|mapper|service`，SQL 脚本位于 `src/main/resources` |
 | 业务服务层 | Service + Impl 负责 CRUD、幂等校验、异常抛出 | ✅ 已实现：九个 Service Impl，使用 `ResourceNotFoundException`、`ServiceBeanUtils` | `service/**/*.java`, `service/impl/**/*.java` |
 | 控制器 / REST API | 用户注册登录、媒体 CRUD、统计等 RESTful 接口 | ❌ 未实现：`controller/` 目录为空，无 `@RestController` | 需新增 Spring MVC 层 |
 | 认证与安全 | JWT / Session、偏好设置 | ❌ 未实现：`users` 表无 `preference` 字段，也无 Security 配置 | 需引入 Spring Security 或自定义过滤器 |
