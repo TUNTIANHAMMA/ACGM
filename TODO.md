@@ -12,8 +12,8 @@
    - ✅ Schema（`progress_comic` + trigger）与 Entity/Mapper/Service 已落地，可等待后续 Controller/业务编排。
    - 下一步：在媒体 CRUD 中串联漫画进度创建/更新逻辑，并补测试。
 3. **认证与账号体系 / Auth & Account**
-   - 缺注册/登录流程、密码加密、JWT/Session；`users` 表未含 `preference` JSON。
-   - 需要引入 Spring Security 或等效方案，并落地偏好字段及业务逻辑。
+   - ✅ 已引入 Spring Security + PasswordEncoder，补齐 `users.preference` 字段、AuthService/DTO，可完成注册与基础登录校验。
+   - 下一步：对接 Controller（API 层）、引入真正的 JWT/Session 管理与偏好 CRUD/导出流程。
 4. **外部 API 集成骨架 / External API Integration**
    - `media_api_info` 仅作为缓存表存在，无实际同步/client 调用。
    - 定义抽象 client/service，至少完成一个 demo 集成（如 Bangumi）。

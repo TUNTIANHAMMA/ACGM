@@ -11,6 +11,10 @@ public interface UserMapper {
 
     User selectById(@Param("id") long id);
 
+    User selectByUsername(@Param("username") String username);
+
+    User selectByEmail(@Param("email") String email);
+
     List<User> selectAll();
 
     int insert(User user);

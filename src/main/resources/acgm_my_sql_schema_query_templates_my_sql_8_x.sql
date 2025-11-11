@@ -21,6 +21,7 @@ CREATE TABLE users (
   email         VARCHAR(64)     NOT NULL,
   -- normalize for case/space-insensitive uniqueness
   email_norm    VARCHAR(64) GENERATED ALWAYS AS (LOWER(TRIM(email))) STORED,
+  preference    JSON NULL,
   password      VARCHAR(255)    NOT NULL,
   role          ENUM('user','admin') NOT NULL DEFAULT 'user',
   created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

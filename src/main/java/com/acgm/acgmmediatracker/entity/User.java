@@ -12,6 +12,7 @@ public class User {
   private String username;
   private String email;
   private String emailNorm;
+  private String preference;
   private String password;
   private String role;
   private java.sql.Timestamp createdAt;

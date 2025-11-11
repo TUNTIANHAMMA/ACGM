@@ -16,7 +16,7 @@
 | 数据模型 & DAO | MySQL 8.x + MyBatis，覆盖用户、媒体、标签、收藏、评论、进度、API 缓存 | ✅ 已实现：实体、Mapper 与 XML、Service 层齐全；覆盖 `users`、`media_items`、`tags`、`media_tag_rel`(仅 SQL)、`favorites`、`reviews`、`media_api_info`、`progress_anime/game/music` | `src/main/Java/.../entity|mapper|service`，SQL 脚本位于 `src/main/resources` |
 | 业务服务层 | Service + Impl 负责 CRUD、幂等校验、异常抛出 | ✅ 已实现：九个 Service Impl，使用 `ResourceNotFoundException`、`ServiceBeanUtils` | `service/**/*.java`, `service/impl/**/*.java` |
 | 控制器 / REST API | 用户注册登录、媒体 CRUD、统计等 RESTful 接口 | ❌ 未实现：`controller/` 目录为空，无 `@RestController` | 需新增 Spring MVC 层 |
-| 认证与安全 | JWT / Session、偏好设置 | ❌ 未实现：`users` 表无 `preference` 字段，也无 Security 配置 | 需引入 Spring Security 或自定义过滤器 |
+| 认证与安全 | JWT / Session、偏好设置 | ⚠️ 基础设施已就绪：`users.preference` 字段、Spring Security 与 AuthService；尚未暴露注册/登录 API 或 JWT | 后续补充 Controller + Token 管理 |
 | Analytics / 统计 | 图表、完成率、趋势等 | ❌ 未实现：无统计 Service/Mapper，也无 SQL 视图消费 | 可基于 `media_items` 聚合实现 |
 | 外部 API 集成 | Bangumi / RAWG / Spotify、天气、推荐 | ⚠️ 部分准备：`media_api_info` 表和 Mapper 已有，但无集成逻辑或调度 | 需编写 Client + Service |
 | 标签多对多 | 记录标签与内容映射 | ⚠️ SQL 已建 `media_tag_rel`，但尚无 Java 实体、Mapper、Service | 需新增 `MediaTagRel` 相关代码 |
@@ -43,7 +43,7 @@
 | created_at | DATETIME | 默认 CURRENT_TIMESTAMP |
 | updated_at | DATETIME | 自动更新时间 |
 
-> 差异：原始文档中的 `preference JSON` 列尚未创建。
+> 已同步：新增 `preference JSON` 列用于存储用户偏好。
 
 #### media_items
 
@@ -137,7 +137,7 @@
 ### 3.2 尚未落地的 Schema / 差异列表
 
 - `progress_comic`：表结构与业务逻辑均缺失。
-- `users.preference`、`tags.color`、`media_tag_rel.create_time` 等规划字段尚未出现在 SQL 与实体中。
+- `tags.color`、`media_tag_rel.create_time` 等规划字段尚未出现在 SQL 与实体中。
 - `MediaTagRel`（多对多关系）没有对应的 Entity / Mapper / Service。
 - 原文档提到的触发器、统计视图、存储过程示例仅在 SQL 模板中，尚未在代码中引用。
 
