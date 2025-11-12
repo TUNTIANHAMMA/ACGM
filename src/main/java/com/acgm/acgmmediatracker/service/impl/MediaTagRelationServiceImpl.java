@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,14 @@ public class MediaTagRelationServiceImpl implements MediaTagRelationService {
     }
 
     @Override
+    public List<Long> listTagIds(long mediaId) {
+        return listByMediaId(mediaId)
+                .stream()
+                .map(MediaTagRelation::getTagId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<MediaTagRelation> listByTagId(long tagId) {
         List<MediaTagRelation> relations = relationMapper.selectByTagId(tagId);
         return relations == null ? Collections.emptyList() : relations;
@@ -46,6 +57,33 @@ public class MediaTagRelationServiceImpl implements MediaTagRelationService {
         Objects.requireNonNull(relation, "媒体标签关系不能为空");
         relationMapper.insert(relation);
         return get(relation.getMediaId(), relation.getTagId());
+    }
+
+    @Override
+    @Transactional
+    public void replaceTags(long mediaId, List<Long> tagIds) {
+        LinkedHashSet<Long> desired = tagIds == null ? new LinkedHashSet<>() : tagIds.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Set<Long> existing = listByMediaId(mediaId).stream()
+                .map(MediaTagRelation::getTagId)
+                .collect(Collectors.toSet());
+
+        List<Long> toAdd = desired.stream()
+                .filter(id -> !existing.contains(id))
+                .collect(Collectors.toList());
+
+        List<Long> toRemove = existing.stream()
+                .filter(id -> !desired.contains(id))
+                .collect(Collectors.toList());
+
+        if (!toAdd.isEmpty()) {
+            relationMapper.insertBatch(mediaId, toAdd);
+        }
+        if (!toRemove.isEmpty()) {
+            relationMapper.deleteByMediaIdAndTagIds(mediaId, toRemove);
+        }
     }
 
     @Override

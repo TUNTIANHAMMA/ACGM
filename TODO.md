@@ -7,7 +7,7 @@
 ## P0 · 核心差异（必须优先解决）
 1. **标签多对多支撑 / Media-Tag Relation**
    - ✅ Entity/Mapper/XML/Service 以及 Mapper 级测试（含 create_time）已就绪。
-   - 下一步：在媒体 CRUD/DTO 中串联标签关系（批量插入、幂等删除），补 Service 层单测，并规划事务策略。
+   - ✅ 媒体 CRUD/DTO 现已串联标签关系（批量插入、幂等删除），并补齐 Service 层单测与事务策略。
 2. **漫画进度管理 / Progress (Comic)**
    - ✅ Schema（`progress_comic` + trigger）与 Entity/Mapper/Service 已落地，可等待后续 Controller/业务编排。
    - 下一步：在媒体 CRUD 中串联漫画进度创建/更新逻辑，并补测试。

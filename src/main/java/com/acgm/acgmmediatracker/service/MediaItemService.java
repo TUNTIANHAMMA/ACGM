@@ -1,18 +1,19 @@
 package com.acgm.acgmmediatracker.service;
 
-import com.acgm.acgmmediatracker.entity.MediaItem;
+import com.acgm.acgmmediatracker.dto.media.MediaItemCommand;
+import com.acgm.acgmmediatracker.dto.media.MediaItemDetail;
 
 import java.util.List;
 
 public interface MediaItemService {
 
-    MediaItem getById(long id);
+    MediaItemDetail getDetail(long id);
 
-    List<MediaItem> listAll();
+    List<MediaItemDetail> listAll();
 
-    MediaItem create(MediaItem mediaItem);
+    MediaItemDetail create(MediaItemCommand command);
 
-    MediaItem update(long id, MediaItem mediaItem);
+    MediaItemDetail update(long id, MediaItemCommand command);
 
     void delete(long id);
 }

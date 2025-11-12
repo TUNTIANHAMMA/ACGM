@@ -17,5 +17,9 @@ public interface MediaTagRelationMapper {
 
     int insert(MediaTagRelation relation);
 
+    int insertBatch(@Param("mediaId") long mediaId, @Param("tagIds") List<Long> tagIds);
+
     int delete(@Param("mediaId") long mediaId, @Param("tagId") long tagId);
+
+    int deleteByMediaIdAndTagIds(@Param("mediaId") long mediaId, @Param("tagIds") List<Long> tagIds);
 }

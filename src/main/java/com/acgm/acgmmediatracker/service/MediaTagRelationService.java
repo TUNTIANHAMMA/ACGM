@@ -10,9 +10,13 @@ public interface MediaTagRelationService {
 
     List<MediaTagRelation> listByMediaId(long mediaId);
 
+    List<Long> listTagIds(long mediaId);
+
     List<MediaTagRelation> listByTagId(long tagId);
 
     MediaTagRelation create(MediaTagRelation relation);
+
+    void replaceTags(long mediaId, List<Long> tagIds);
 
     void delete(long mediaId, long tagId);
 }

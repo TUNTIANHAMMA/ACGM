@@ -45,4 +45,25 @@ class MediaTagRelationMapperTest {
                 .extracting(MediaTagRelation::getTagId)
                 .contains(tag.getId());
     }
+
+    @Test
+    void batchInsertAndSelectiveDeleteWorks() {
+        User user = helper.createUser();
+        MediaItem mediaItem = helper.createMediaItem(user.getId(), "game");
+        Tag first = helper.createTag(user.getId());
+        Tag second = helper.createTag(user.getId());
+
+        relationMapper.insertBatch(mediaItem.getId(), List.of(first.getId(), second.getId()));
+
+        List<MediaTagRelation> relations = relationMapper.selectByMediaId(mediaItem.getId());
+        assertThat(relations).hasSize(2);
+
+        relationMapper.deleteByMediaIdAndTagIds(mediaItem.getId(), List.of(first.getId()));
+
+        List<Long> remaining = relationMapper.selectByMediaId(mediaItem.getId())
+                .stream()
+                .map(MediaTagRelation::getTagId)
+                .toList();
+        assertThat(remaining).containsExactly(second.getId());
+    }
 }
