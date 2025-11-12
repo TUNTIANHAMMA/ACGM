@@ -34,11 +34,13 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(request.getEmail());
         user.setPreference(request.getPreference());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        // INSERT 语句中明确写出了字段名 role，MySQL 就会 忽略默认值 DEFAULT 'user'。所以需要进行判断。
         user.setRole(request.getRole() == null ? "user" : request.getRole());
         Timestamp now = Timestamp.from(Instant.now());
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
         userMapper.insert(user);
+        // 再次从数据库查询，确保返回的是包含数据库自动生成字段（如id、默认值、时间戳等）的完整用户数据
         return userMapper.selectById(user.getId());
     }
 
@@ -53,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
         String token = UUID.randomUUID().toString();
         return new AuthResult(user, token, Instant.now());
     }
+
 
     private void validateRegistration(UserRegistrationRequest request) {
         if (userMapper.selectByUsername(request.getUsername()) != null) {
