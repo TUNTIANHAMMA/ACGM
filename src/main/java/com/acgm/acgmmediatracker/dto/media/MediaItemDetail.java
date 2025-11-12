@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Service 层返回给上层的媒体详情，包含标签 ID 集合，用于后续 DTO 映射。
+ * 封装媒体条目及其关联的标签 ID 集合。Service 层的输出载体 Service → Controller
  */
 public record MediaItemDetail(MediaItem mediaItem, List<Long> tagIds) {
 
