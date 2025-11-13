@@ -1,4 +1,4 @@
-# 🎮 ACGM Media Tracker
+# ACGM Media Tracker
 
 —— 多类型娱乐内容收藏与管理系统
 
@@ -18,7 +18,7 @@
 - 支持多类型媒体内容（动画 / 漫画 / 游戏 / 音乐）；
 - 实现灵活的记录、筛选、统计与可视化分析功能；
 - 集成外部 API（如天气、番剧、游戏或音乐信息）以丰富系统内容；
-- 采用**前后端分离架构（Spring Boot + Vue/React）**，便于后期扩展与维护。
+- 采用**前后端分离架构（Spring Boot + ( Nodejs ) + React）**，便于后期扩展与维护。
 
 ## 二、系统架构与功能结构
 
@@ -177,7 +177,7 @@ ACGM Media Tracker
 | id                                 | BIGINT                                                 | PK, AUTO_INCREMENT                   | 条目主键               |
 | user_id                            | BIGINT                                                 | FK → users(id)                       | 所属用户               |
 | title                              | VARCHAR(128)                                           | NOT NULL                             | 内容标题               |
-| type                               | ENUM('anime','comic','game','music')                   | NOT NULL                             | 内容类型               |
+| type                               | ENUM('anime','comic','game','music')                   | NOT NULL                             | 内容 类型              |
 | status                             | ENUM('not_started','in_progress','completed','paused') | DEFAULT 'not_started'                | 状态                   |
 | rating                             | DECIMAL(3,1)                                           | DEFAULT NULL                         | 用户评分（1–10）       |
 | platform                           | VARCHAR(64)                                            | DEFAULT NULL                         | 来源平台               |
