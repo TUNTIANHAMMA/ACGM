@@ -103,4 +103,19 @@ DELIMITER ;
 
 
 -- =========================================
+-- 11) Media library helper queries (TEMPLATE)
+-- These are examples for matching user input to global media_library entries.
+--
+/*
+-- 11.1 Search media_library by keyword and optional type
+-- :t=type?, :kw=keyword?, :limit, :offset
+SELECT l.*
+FROM media_library l
+WHERE (:t IS NULL OR l.type = :t)
+  AND (:kw IS NULL OR MATCH(l.title) AGAINST (:kw IN BOOLEAN MODE))
+ORDER BY l.id DESC
+LIMIT :limit OFFSET :offset;
+*/
+
+-- =========================================
 -- End of file

@@ -33,12 +33,33 @@ CREATE TABLE users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =========================================
--- 2) Media Items (core table)
+-- 2) Media Library (global catalog)
+-- =========================================
+DROP TABLE IF EXISTS media_library;
+CREATE TABLE media_library (
+  id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  type           ENUM('anime','comic','game','music','movie','tv') NOT NULL,
+  title          VARCHAR(255) NOT NULL,
+  original_title VARCHAR(255) NULL,
+  year           SMALLINT UNSIGNED NULL,
+  cover_url      VARCHAR(512) NULL,
+  source         VARCHAR(32) NULL,
+  meta           JSON NULL,
+  created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_ml_type_title (type, title),
+  FULLTEXT KEY ft_ml_title (title) WITH PARSER ngram
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- =========================================
+-- 3) Media Items (user media list)
 -- =========================================
 DROP TABLE IF EXISTS media_items;
 CREATE TABLE media_items (
   id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id         BIGINT UNSIGNED NOT NULL,
+  library_id      BIGINT UNSIGNED NULL,
   type            ENUM('anime','comic','game','music','movie','tv') NOT NULL,
   status          ENUM('planned','in_progress','completed','dropped','on_hold') NOT NULL DEFAULT 'planned',
   title           VARCHAR(255) NOT NULL,
@@ -60,13 +81,16 @@ CREATE TABLE media_items (
   KEY idx_media_u_s_fd (user_id, status, finish_date),
   KEY idx_media_not_deleted (deleted_at),
   KEY idx_media_finish_month (user_id, finish_month),
+  KEY idx_media_library (library_id),
   FULLTEXT KEY ft_title_notes (title, notes) WITH PARSER ngram,
+  CONSTRAINT fk_media_library FOREIGN KEY (library_id)
+    REFERENCES media_library(id) ON DELETE SET NULL,
   CONSTRAINT fk_media_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT chk_media_rating_range CHECK (rating IS NULL OR (rating >= 0.0 AND rating <= 10.0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =========================================
--- 3) Tags and relation (many-to-many)
+-- 4) Tags and relation (many-to-many)
 -- =========================================
 DROP TABLE IF EXISTS media_tag_rel;
 DROP TABLE IF EXISTS tags;
@@ -92,7 +116,7 @@ CREATE TABLE media_tag_rel (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =========================================
--- 4) Favorites and Reviews
+-- 5) Favorites and Reviews
 -- =========================================
 DROP TABLE IF EXISTS favorites;
 CREATE TABLE favorites (
@@ -122,7 +146,7 @@ CREATE TABLE reviews (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =========================================
--- 5) External API cache
+-- 6) External API cache
 -- =========================================
 DROP TABLE IF EXISTS media_api_info;
 CREATE TABLE media_api_info (
@@ -140,7 +164,7 @@ CREATE TABLE media_api_info (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =========================================
--- 6) Progress tables (1:1 with media_items by type)
+-- 7) Progress tables (1:1 with media_items by type)
 -- =========================================
 -- Anime progress
 DROP TABLE IF EXISTS progress_anime;
@@ -190,7 +214,7 @@ CREATE TABLE progress_music (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =========================================
--- 7) Triggers to enforce media.type consistency for progress tables
+-- 8) Triggers to enforce media.type consistency for progress tables
 -- (Prevents inserting a progress row that doesn't match media_items.type)
 -- =========================================
 DELIMITER $$
@@ -236,7 +260,7 @@ END $$
 DELIMITER ;
 
 -- =========================================
--- 8) Views (optional helpers)
+-- 9) Views (optional helpers)
 -- =========================================
 DROP VIEW IF EXISTS v_media_public;
 CREATE VIEW v_media_public AS
