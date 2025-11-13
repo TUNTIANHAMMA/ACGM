@@ -15,14 +15,21 @@
 /*
 -- 9.1 List media with common filters and pagination (TEMPLATE)
 -- :u=user_id, :t=type?, :s=status?, :rmin=rating_min?, :kw=keyword?, :sort=finish_date/created_at, :dir=ASC/DESC
-SELECT m.*
+SELECT m.*, l.type, l.title AS library_title,
+       COALESCE(m.custom_title, l.title) AS display_title,
+       COALESCE(m.custom_cover_url, l.cover_url) AS display_cover_url
 FROM media_items m
+JOIN media_library l ON l.id = m.library_id
 WHERE m.user_id = :u
-AND (:t IS NULL OR m.type = :t)
+AND (:t IS NULL OR l.type = :t)
 AND (:s IS NULL OR m.status = :s)
 AND (:rmin IS NULL OR (m.rating IS NOT NULL AND m.rating >= :rmin))
 AND m.deleted_at IS NULL
-AND (:kw IS NULL OR MATCH(m.title, m.notes) AGAINST (:kw IN BOOLEAN MODE))
+AND (
+      :kw IS NULL
+      OR MATCH(l.title, l.original_title) AGAINST (:kw IN BOOLEAN MODE)
+      OR MATCH(m.custom_title, m.notes) AGAINST (:kw IN BOOLEAN MODE)
+    )
 ORDER BY m.finish_date DESC, m.id DESC
 LIMIT :limit OFFSET :offset;
 
@@ -31,8 +38,11 @@ LIMIT :limit OFFSET :offset;
 WITH t AS (
 SELECT id FROM tags WHERE user_id = :u AND name IN (:t1,:t2,:t3)
 )
-SELECT m.*
+SELECT m.*, l.type, l.title AS library_title,
+       COALESCE(m.custom_title, l.title) AS display_title,
+       COALESCE(m.custom_cover_url, l.cover_url) AS display_cover_url
 FROM media_items m
+JOIN media_library l ON l.id = m.library_id
 JOIN media_tag_rel r ON r.media_id = m.id
 JOIN t ON t.id = r.tag_id
 WHERE m.user_id = :u AND m.deleted_at IS NULL
@@ -57,14 +67,43 @@ CREATE PROCEDURE sp_media_list_basic(
     IN p_offset INT
 )
 BEGIN
-    SELECT m.*
+    SELECT
+        m.id,
+        m.user_id,
+        m.library_id,
+        l.type,
+        l.title                AS library_title,
+        l.original_title       AS library_original_title,
+        l.cover_url            AS library_cover_url,
+        l.source               AS library_source,
+        m.status,
+        m.rating,
+        m.notes,
+        m.start_date,
+        m.finish_date,
+        m.custom_title,
+        m.custom_cover_url,
+        m.custom_source,
+        m.created_at,
+        m.updated_at,
+        m.deleted_at,
+        m.row_version,
+        m.finish_month,
+        COALESCE(m.custom_title, l.title)        AS display_title,
+        COALESCE(m.custom_cover_url, l.cover_url) AS display_cover_url,
+        COALESCE(m.custom_source, l.source)      AS display_source
     FROM media_items m
+    JOIN media_library l ON l.id = m.library_id
     WHERE m.user_id = p_user_id
-      AND (p_type IS NULL OR m.type = p_type)
+      AND (p_type IS NULL OR l.type = p_type)
       AND (p_status IS NULL OR m.status = p_status)
       AND (p_rating_min IS NULL OR (m.rating IS NOT NULL AND m.rating >= p_rating_min))
       AND m.deleted_at IS NULL
-      AND (p_keyword IS NULL OR MATCH(m.title, m.notes) AGAINST (p_keyword IN BOOLEAN MODE))
+      AND (
+            p_keyword IS NULL
+            OR MATCH(l.title, l.original_title) AGAINST (p_keyword IN BOOLEAN MODE)
+            OR MATCH(m.custom_title, m.notes) AGAINST (p_keyword IN BOOLEAN MODE)
+          )
     ORDER BY m.finish_date DESC, m.id DESC
     LIMIT p_limit OFFSET p_offset;
 END $$
@@ -84,8 +123,33 @@ BEGIN
         WHERE user_id = p_user_id
           AND (p_tags_csv IS NULL OR FIND_IN_SET(name, p_tags_csv) > 0)
     )
-    SELECT m.*
+    SELECT
+        m.id,
+        m.user_id,
+        m.library_id,
+        l.type,
+        l.title                AS library_title,
+        l.original_title       AS library_original_title,
+        l.cover_url            AS library_cover_url,
+        l.source               AS library_source,
+        m.status,
+        m.rating,
+        m.notes,
+        m.start_date,
+        m.finish_date,
+        m.custom_title,
+        m.custom_cover_url,
+        m.custom_source,
+        m.created_at,
+        m.updated_at,
+        m.deleted_at,
+        m.row_version,
+        m.finish_month,
+        COALESCE(m.custom_title, l.title)        AS display_title,
+        COALESCE(m.custom_cover_url, l.cover_url) AS display_cover_url,
+        COALESCE(m.custom_source, l.source)      AS display_source
     FROM media_items m
+             JOIN media_library l ON l.id = m.library_id
              JOIN media_tag_rel r ON r.media_id = m.id
              JOIN t ON t.id = r.tag_id
     WHERE m.user_id = p_user_id AND m.deleted_at IS NULL
@@ -112,7 +176,7 @@ DELIMITER ;
 SELECT l.*
 FROM media_library l
 WHERE (:t IS NULL OR l.type = :t)
-  AND (:kw IS NULL OR MATCH(l.title) AGAINST (:kw IN BOOLEAN MODE))
+  AND (:kw IS NULL OR MATCH(l.title, l.original_title) AGAINST (:kw IN BOOLEAN MODE))
 ORDER BY l.id DESC
 LIMIT :limit OFFSET :offset;
 */

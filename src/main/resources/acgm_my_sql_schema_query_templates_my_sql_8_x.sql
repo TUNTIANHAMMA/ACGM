@@ -49,7 +49,7 @@ CREATE TABLE media_library (
   updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_ml_type_title (type, title),
-  FULLTEXT KEY ft_ml_title (title) WITH PARSER ngram
+  FULLTEXT KEY ft_ml_title (title, original_title) WITH PARSER ngram
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- =========================================
@@ -59,16 +59,15 @@ DROP TABLE IF EXISTS media_items;
 CREATE TABLE media_items (
   id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id         BIGINT UNSIGNED NOT NULL,
-  library_id      BIGINT UNSIGNED NULL,
-  type            ENUM('anime','comic','game','music','movie','tv') NOT NULL,
+  library_id      BIGINT UNSIGNED NOT NULL,
   status          ENUM('planned','in_progress','completed','dropped','on_hold') NOT NULL DEFAULT 'planned',
-  title           VARCHAR(255) NOT NULL,
-  notes           TEXT NULL,
   rating          DECIMAL(3,1) NULL,
+  notes           TEXT NULL,
   start_date      DATE NULL,
   finish_date     DATE NULL,
-  cover_url       VARCHAR(512) NULL,
-  source          VARCHAR(32) NULL,
+  custom_title    VARCHAR(255) NULL,
+  custom_cover_url VARCHAR(512) NULL,
+  custom_source   VARCHAR(32) NULL,
   created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at      DATETIME NULL,
@@ -76,15 +75,14 @@ CREATE TABLE media_items (
   -- helper generated column for grouping by month
   finish_month    INT GENERATED ALWAYS AS (CASE WHEN finish_date IS NULL THEN NULL ELSE (YEAR(finish_date)*100 + MONTH(finish_date)) END) STORED,
   PRIMARY KEY (id),
-  KEY idx_media_u_t_s_fd (user_id, type, status, finish_date),
-  KEY idx_media_u_t_rating (user_id, type, rating),
-  KEY idx_media_u_s_fd (user_id, status, finish_date),
+  KEY idx_media_user_status_finish (user_id, status, finish_date),
+  KEY idx_media_user_rating (user_id, rating),
   KEY idx_media_not_deleted (deleted_at),
   KEY idx_media_finish_month (user_id, finish_month),
   KEY idx_media_library (library_id),
-  FULLTEXT KEY ft_title_notes (title, notes) WITH PARSER ngram,
+  FULLTEXT KEY ft_media_custom_notes (custom_title, notes) WITH PARSER ngram,
   CONSTRAINT fk_media_library FOREIGN KEY (library_id)
-    REFERENCES media_library(id) ON DELETE SET NULL,
+    REFERENCES media_library(id) ON DELETE RESTRICT,
   CONSTRAINT fk_media_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT chk_media_rating_range CHECK (rating IS NULL OR (rating >= 0.0 AND rating <= 10.0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -215,7 +213,7 @@ CREATE TABLE progress_music (
 
 -- =========================================
 -- 8) Triggers to enforce media.type consistency for progress tables
--- (Prevents inserting a progress row that doesn't match media_items.type)
+-- (Prevents inserting a progress row that doesn't match media_library.type)
 -- =========================================
 DELIMITER $$
 DROP TRIGGER IF EXISTS trg_progress_anime_type_guard $$
@@ -223,7 +221,10 @@ CREATE TRIGGER trg_progress_anime_type_guard
 BEFORE INSERT ON progress_anime
 FOR EACH ROW
 BEGIN
-  IF (SELECT type FROM media_items WHERE id = NEW.media_id) <> 'anime' THEN
+  IF (SELECT l.type
+      FROM media_items m
+      JOIN media_library l ON l.id = m.library_id
+      WHERE m.id = NEW.media_id) <> 'anime' THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'media.type must be anime for progress_anime';
   END IF;
 END $$
@@ -233,7 +234,10 @@ CREATE TRIGGER trg_progress_comic_type_guard
 BEFORE INSERT ON progress_comic
 FOR EACH ROW
 BEGIN
-  IF (SELECT type FROM media_items WHERE id = NEW.media_id) <> 'comic' THEN
+  IF (SELECT l.type
+      FROM media_items m
+      JOIN media_library l ON l.id = m.library_id
+      WHERE m.id = NEW.media_id) <> 'comic' THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'media.type must be comic for progress_comic';
   END IF;
 END $$
@@ -243,7 +247,10 @@ CREATE TRIGGER trg_progress_game_type_guard
 BEFORE INSERT ON progress_game
 FOR EACH ROW
 BEGIN
-  IF (SELECT type FROM media_items WHERE id = NEW.media_id) <> 'game' THEN
+  IF (SELECT l.type
+      FROM media_items m
+      JOIN media_library l ON l.id = m.library_id
+      WHERE m.id = NEW.media_id) <> 'game' THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'media.type must be game for progress_game';
   END IF;
 END $$
@@ -253,7 +260,10 @@ CREATE TRIGGER trg_progress_music_type_guard
 BEFORE INSERT ON progress_music
 FOR EACH ROW
 BEGIN
-  IF (SELECT type FROM media_items WHERE id = NEW.media_id) <> 'music' THEN
+  IF (SELECT l.type
+      FROM media_items m
+      JOIN media_library l ON l.id = m.library_id
+      WHERE m.id = NEW.media_id) <> 'music' THEN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'media.type must be music for progress_music';
   END IF;
 END $$
@@ -264,9 +274,19 @@ DELIMITER ;
 -- =========================================
 DROP VIEW IF EXISTS v_media_public;
 CREATE VIEW v_media_public AS
-SELECT id, user_id, type, status, title, rating, start_date, finish_date, cover_url
-FROM media_items
-WHERE deleted_at IS NULL;
+SELECT
+  m.id,
+  m.user_id,
+  l.type,
+  m.status,
+  COALESCE(m.custom_title, l.title) AS title,
+  m.rating,
+  m.start_date,
+  m.finish_date,
+  COALESCE(m.custom_cover_url, l.cover_url) AS cover_url
+FROM media_items m
+JOIN media_library l ON l.id = m.library_id
+WHERE m.deleted_at IS NULL;
 
 
 SET FOREIGN_KEY_CHECKS = 1;
