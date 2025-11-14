@@ -7,15 +7,15 @@
     <resultMap id="MediaItemResultMap" type="com.acgm.acgmmediatracker.entity.MediaItem">
         <id property="id" column="id" />
         <result property="userId" column="user_id" />
-        <result property="type" column="type" />
+        <result property="libraryId" column="library_id" />
         <result property="status" column="status" />
-        <result property="title" column="title" />
-        <result property="notes" column="notes" />
         <result property="rating" column="rating" />
+        <result property="notes" column="notes" />
         <result property="startDate" column="start_date" />
         <result property="finishDate" column="finish_date" />
-        <result property="coverUrl" column="cover_url" />
-        <result property="source" column="source" />
+        <result property="customTitle" column="custom_title" />
+        <result property="customCoverUrl" column="custom_cover_url" />
+        <result property="customSource" column="custom_source" />
         <result property="createdAt" column="created_at" />
         <result property="updatedAt" column="updated_at" />
         <result property="deletedAt" column="deleted_at" />
@@ -26,15 +26,15 @@
     <sql id="MediaItem_Columns">
         id,
         user_id,
-        type,
+        library_id,
         status,
-        title,
-        notes,
         rating,
+        notes,
         start_date,
         finish_date,
-        cover_url,
-        source,
+        custom_title,
+        custom_cover_url,
+        custom_source,
         created_at,
         updated_at,
         deleted_at,
@@ -57,34 +57,30 @@
             parameterType="com.acgm.acgmmediatracker.entity.MediaItem">
         INSERT INTO media_items (
             user_id,
-            type,
+            library_id,
             status,
-            title,
-            notes,
             rating,
+            notes,
             start_date,
             finish_date,
-            cover_url,
-            source,
-            created_at,
-            updated_at,
+            custom_title,
+            custom_cover_url,
+            custom_source,
             deleted_at,
             row_version
         ) VALUES (
             #{userId},
-            #{type},
+            #{libraryId},
             #{status},
-            #{title},
-            #{notes},
             #{rating},
+            #{notes},
             #{startDate},
             #{finishDate},
-            #{coverUrl},
-            #{source},
-            #{createdAt},
-            #{updatedAt},
+            #{customTitle},
+            #{customCoverUrl},
+            #{customSource},
             #{deletedAt},
-            #{rowVersion}
+            COALESCE(#{rowVersion}, 0)
         )
     </insert>
 
@@ -92,16 +88,15 @@
         UPDATE media_items
         SET
             user_id = #{userId},
-            type = #{type},
+            library_id = #{libraryId},
             status = #{status},
-            title = #{title},
-            notes = #{notes},
             rating = #{rating},
+            notes = #{notes},
             start_date = #{startDate},
             finish_date = #{finishDate},
-            cover_url = #{coverUrl},
-            source = #{source},
-            updated_at = #{updatedAt},
+            custom_title = #{customTitle},
+            custom_cover_url = #{customCoverUrl},
+            custom_source = #{customSource},
             deleted_at = #{deletedAt},
             row_version = #{rowVersion}
         WHERE id = #{id}

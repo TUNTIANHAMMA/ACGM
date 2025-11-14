@@ -28,7 +28,8 @@ class MediaItemMapperTest {
 
         MediaItem found = mediaItemMapper.selectById(item.getId());
         assertThat(found).isNotNull();
-        assertThat(found.getTitle()).isEqualTo(item.getTitle());
+        assertThat(found.getCustomTitle()).isEqualTo(item.getCustomTitle());
+        assertThat(found.getLibraryId()).isEqualTo(item.getLibraryId());
         assertThat(found.getUserId()).isEqualTo(user.getId());
     }
 }

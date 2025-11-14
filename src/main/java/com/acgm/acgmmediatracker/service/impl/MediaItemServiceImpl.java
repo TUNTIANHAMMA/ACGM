@@ -3,9 +3,11 @@ package com.acgm.acgmmediatracker.service.impl;
 import com.acgm.acgmmediatracker.dto.media.MediaItemCommand;
 import com.acgm.acgmmediatracker.dto.media.MediaItemDetail;
 import com.acgm.acgmmediatracker.entity.MediaItem;
+import com.acgm.acgmmediatracker.entity.MediaLibrary;
 import com.acgm.acgmmediatracker.mapper.MediaItemMapper;
-import com.acgm.acgmmediatracker.service.MediaTagRelationService;
+import com.acgm.acgmmediatracker.mapper.MediaLibraryMapper;
 import com.acgm.acgmmediatracker.service.MediaItemService;
+import com.acgm.acgmmediatracker.service.MediaTagRelationService;
 import com.acgm.acgmmediatracker.service.exception.ResourceNotFoundException;
 import com.acgm.acgmmediatracker.service.util.ServiceBeanUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class MediaItemServiceImpl implements MediaItemService {
 
     private final MediaItemMapper mediaItemMapper;
+    private final MediaLibraryMapper mediaLibraryMapper;
     private final MediaTagRelationService mediaTagRelationService;
 
     @Override
@@ -46,6 +49,10 @@ public class MediaItemServiceImpl implements MediaItemService {
     public MediaItemDetail create(MediaItemCommand command) {
         Objects.requireNonNull(command, "媒体条目指令不能为空");
         MediaItem mediaItem = command.mediaItem();
+        ensureLibraryReference(mediaItem.getLibraryId());
+        if (mediaItem.getRowVersion() == null) {
+            mediaItem.setRowVersion(0L);
+        }
         mediaItemMapper.insert(mediaItem);
         syncTags(mediaItem.getId(), command);
         return getDetail(mediaItem.getId());
@@ -56,8 +63,16 @@ public class MediaItemServiceImpl implements MediaItemService {
     public MediaItemDetail update(long id, MediaItemCommand command) {
         Objects.requireNonNull(command, "媒体条目指令不能为空");
         MediaItem existing = loadMedia(id);
-        ServiceBeanUtils.copyNonNullProperties(command.mediaItem(), existing);
+        MediaItem patch = command.mediaItem();
+        boolean libraryUpdated = patch.getLibraryId() != null;
+        ServiceBeanUtils.copyNonNullProperties(patch, existing);
         existing.setId(id);
+        if (libraryUpdated) {
+            ensureLibraryReference(existing.getLibraryId());
+        }
+        if (existing.getRowVersion() == null) {
+            existing.setRowVersion(0L);
+        }
         mediaItemMapper.update(existing);
         syncTags(id, command);
         return getDetail(id);
@@ -77,11 +92,27 @@ public class MediaItemServiceImpl implements MediaItemService {
             throw new ResourceNotFoundException("未找到媒体条目，ID=" + id);
         }
         return mediaItem;
-    }   
+    }
+
+    private void ensureLibraryReference(Long libraryId) {
+        if (libraryId == null) {
+            throw new IllegalArgumentException("媒体条目必须关联 media_library 记录");
+        }
+        loadLibrary(libraryId);
+    }
+
+    private MediaLibrary loadLibrary(long libraryId) {
+        MediaLibrary library = mediaLibraryMapper.selectById(libraryId);
+        if (library == null) {
+            throw new ResourceNotFoundException("未找到作品记录，libraryId=" + libraryId);
+        }
+        return library;
+    }
 
     private MediaItemDetail toDetail(MediaItem mediaItem) {
+        MediaLibrary library = loadLibrary(mediaItem.getLibraryId());
         List<Long> tagIds = mediaTagRelationService.listTagIds(mediaItem.getId());
-        return new MediaItemDetail(mediaItem, tagIds);
+        return new MediaItemDetail(mediaItem, library, tagIds);
     }
 
     private void syncTags(long mediaId, MediaItemCommand command) {

@@ -3,7 +3,9 @@ package com.acgm.acgmmediatracker.service;
 import com.acgm.acgmmediatracker.dto.media.MediaItemCommand;
 import com.acgm.acgmmediatracker.dto.media.MediaItemDetail;
 import com.acgm.acgmmediatracker.entity.MediaItem;
+import com.acgm.acgmmediatracker.entity.MediaLibrary;
 import com.acgm.acgmmediatracker.mapper.MediaItemMapper;
+import com.acgm.acgmmediatracker.mapper.MediaLibraryMapper;
 import com.acgm.acgmmediatracker.service.impl.MediaItemServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,9 @@ class MediaItemServiceImplTest {
     private MediaItemMapper mediaItemMapper;
 
     @Mock
+    private MediaLibraryMapper mediaLibraryMapper;
+
+    @Mock
     private MediaTagRelationService mediaTagRelationService;
 
     @InjectMocks
@@ -43,6 +48,7 @@ class MediaItemServiceImplTest {
         MediaItem newItem = baseMediaItem();
         MediaItem persisted = baseMediaItem();
         persisted.setId(42L);
+        MediaLibrary library = baseLibrary(newItem.getLibraryId());
 
         doAnswer(invocation -> {
             MediaItem argument = invocation.getArgument(0);
@@ -51,11 +57,14 @@ class MediaItemServiceImplTest {
         }).when(mediaItemMapper).insert(newItem);
 
         when(mediaItemMapper.selectById(42L)).thenReturn(persisted);
+        when(mediaLibraryMapper.selectById(newItem.getLibraryId())).thenReturn(library);
+        when(mediaLibraryMapper.selectById(persisted.getLibraryId())).thenReturn(library);
         when(mediaTagRelationService.listTagIds(42L)).thenReturn(List.of(1L, 2L));
 
         MediaItemDetail detail = mediaItemService.create(new MediaItemCommand(newItem, List.of(1L, 2L)));
 
         assertThat(detail.mediaItem()).isEqualTo(persisted);
+        assertThat(detail.mediaLibrary()).isEqualTo(library);
         assertThat(detail.tagIds()).containsExactly(1L, 2L);
         verify(mediaTagRelationService).replaceTags(42L, List.of(1L, 2L));
     }
@@ -64,15 +73,17 @@ class MediaItemServiceImplTest {
     void updateWithoutTagPayloadSkipsRelationSync() {
         MediaItem stored = baseMediaItem();
         stored.setId(7L);
+        MediaLibrary library = baseLibrary(stored.getLibraryId());
         when(mediaItemMapper.selectById(7L)).thenReturn(stored);
+        when(mediaLibraryMapper.selectById(stored.getLibraryId())).thenReturn(library);
         when(mediaTagRelationService.listTagIds(7L)).thenReturn(Collections.emptyList());
 
         MediaItem patch = new MediaItem();
-        patch.setTitle("new-title");
+        patch.setCustomTitle("new-title");
 
         MediaItemDetail detail = mediaItemService.update(7L, new MediaItemCommand(patch, null));
 
-        assertThat(detail.mediaItem().getTitle()).isEqualTo("new-title");
+        assertThat(detail.mediaItem().getCustomTitle()).isEqualTo("new-title");
         verify(mediaTagRelationService, never()).replaceTags(anyLong(), anyList());
     }
 
@@ -91,21 +102,33 @@ class MediaItemServiceImplTest {
     private MediaItem baseMediaItem() {
         MediaItem item = new MediaItem();
         item.setUserId(1L);
-        item.setType("anime");
+        item.setLibraryId(100L);
         item.setStatus("planned");
-        item.setTitle("title");
+        item.setCustomTitle("title");
         item.setNotes("notes");
         item.setRating(8.0);
         LocalDate today = LocalDate.now();
         item.setStartDate(Date.valueOf(today));
         item.setFinishDate(Date.valueOf(today));
-        item.setCoverUrl("http://example.com");
-        item.setSource("manual");
-        Timestamp now = Timestamp.from(Instant.now());
-        item.setCreatedAt(now);
-        item.setUpdatedAt(now);
+        item.setCustomCoverUrl("http://example.com");
+        item.setCustomSource("manual");
         item.setDeletedAt(null);
         item.setRowVersion(1L);
         return item;
+    }
+
+    private MediaLibrary baseLibrary(Long id) {
+        MediaLibrary library = new MediaLibrary();
+        library.setId(id);
+        library.setType("anime");
+        library.setTitle("library-title");
+        library.setOriginalTitle("orig");
+        library.setYear(2020);
+        library.setCoverUrl("http://example.com/library");
+        library.setSource("manual");
+        library.setMeta("{}");
+        library.setCreatedAt(Timestamp.from(Instant.now()));
+        library.setUpdatedAt(Timestamp.from(Instant.now()));
+        return library;
     }
 }
