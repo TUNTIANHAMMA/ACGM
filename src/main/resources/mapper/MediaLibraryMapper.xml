@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acgm.acgmmediatracker.mapper.MediaLibraryMapper">
+
+    <resultMap id="MediaLibraryResultMap" type="com.acgm.acgmmediatracker.entity.MediaLibrary">
+        <id property="id" column="id" />
+        <result property="type" column="type" />
+        <result property="title" column="title" />
+        <result property="originalTitle" column="original_title" />
+        <result property="year" column="year" />
+        <result property="coverUrl" column="cover_url" />
+        <result property="source" column="source" />
+        <result property="meta" column="meta" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="MediaLibrary_Columns">
+        id,
+        type,
+        title,
+        original_title,
+        year,
+        cover_url,
+        source,
+        meta,
+        created_at,
+        updated_at
+    </sql>
+
+    <select id="selectById" resultMap="MediaLibraryResultMap">
+        SELECT <include refid="MediaLibrary_Columns" />
+        FROM media_library
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="MediaLibraryResultMap">
+        SELECT <include refid="MediaLibrary_Columns" />
+        FROM media_library
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.acgm.acgmmediatracker.entity.MediaLibrary">
+        INSERT INTO media_library (
+            type,
+            title,
+            original_title,
+            year,
+            cover_url,
+            source,
+            meta,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{type},
+            #{title},
+            #{originalTitle},
+            #{year},
+            #{coverUrl},
+            #{source},
+            #{meta},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.acgm.acgmmediatracker.entity.MediaLibrary">
+        UPDATE media_library
+        SET
+            type = #{type},
+            title = #{title},
+            original_title = #{originalTitle},
+            year = #{year},
+            cover_url = #{coverUrl},
+            source = #{source},
+            meta = #{meta},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM media_library
+        WHERE id = #{id}
+    </delete>
+
+</mapper>
